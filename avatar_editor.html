@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>путь</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="logo.svg" type="image/x-icon">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            background: var(--bcg);
+            padding: 20px;
+        }
+        img {
+            height: 70px;
+            border-radius: 50%;
+            aspect-ratio: 1 / 1;
+        }
+        input {
+            width: 100%;
+            height: 40px;
+            background: var(--el);
+            border: 0;
+            border-radius: 10px;
+            box-sizing: border-box;
+            padding: 0px 10px 0px 10px;
+            outline: none;
+        }
+        button {
+            width: 100%;
+            height: 40px;
+            margin-top: 30px;
+        }
+
+        button {
+            display: flex;
+            align-items: center; justify-content: center;
+            background: var(--el);
+            border: 0;
+            border-radius: 10px;
+            color: var(--textnot);
+
+            &.active { background: var(--accent); color: var(--text); }
+        }
+        .profile {
+            width: 100%;
+            background: var(--el);
+            box-sizing: border-box;
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 5px;
+            & h1 { font-size: 25px; font-weight: 500; }
+            & p { color: var(--accent); }
+        }
+
+        label {
+            width: 100%;
+            height: 40px;
+            background: var(--el);
+            display: flex;
+            align-items: center; justify-content: center;
+            border: 0;
+            border-radius: 10px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body data-theme="dark">
+    <img id="avatar" src="user.png" alt="лого">
+    <div class="profile">
+        <h1 id="name">Пользователь</h1>
+        <p id="username">@username</p>
+    </div>
+    <label for="imageInput" class="upload__photo">
+        Выберите изображение
+    </label>
+    <input type="file" accept=".jpg,.jpeg,.png,.gif" id="imageInput" style="display:none;">
+    <button id="regbutton">Начать общение!</button>
+    <script>
+        let canreg = false;
+
+        const SUPABASE_URL = "https://xcowyhnhdpqhegthjmsa.supabase.co";
+        const SUPABASE_KEY = atob("ZXlKaGJHY2lPaUpJVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SnBjM01pT2lKemRYQmhZbUZ6WlNJc0luSmxaaUk2SW5oamIzZDVhRzVvWkhCeGFHVm5kR2hxYlhOaElpd2ljbTlzWlNJNkltRnViMjRpTENKcFlYUWlPakUzTnpNM016WTRPVGtzSW1WNGNDSTZNakE0T1RNeE1qZzVPWDAuV1g3dDZ2cG1yYmhfaFJiME90UWdpa09UUnRNbmZ6anFQUHloWHNaSmhPQQ==");
+
+        const imginput = document.getElementById("imageInput");
+        const regbutton = document.getElementById("regbutton");
+
+        // Проверка что файл выбран и это квадратное изображение
+        let imageValid = false;
+
+        function checkbutton() {
+            if (imageValid) {
+                regbutton.classList.add("active");
+                canreg = true;
+            } else {
+                regbutton.classList.remove("active");
+                canreg = false;
+            }
+        }
+        setInterval(checkbutton, 50);
+
+        // Сжатие картинки через canvas (как TinyPNG — уменьшает размер)
+        function compressImage(file, maxSize = 256) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = new Image();
+                    img.onload = function () {
+                        // Проверка 1:1
+                        if (img.width !== img.height) {
+                            alert("Картинка должна быть квадратной (1:1)!");
+                            imageValid = false;
+                            resolve(null);
+                            return;
+                        }
+
+                        const canvas = document.createElement("canvas");
+                        canvas.width = maxSize;
+                        canvas.height = maxSize;
+                        const ctx = canvas.getContext("2d");
+                        ctx.drawImage(img, 0, 0, maxSize, maxSize);
+
+                        // Сжимаем в JPEG с качеством 0.7
+                        const base64 = canvas.toDataURL("image/jpeg", 0.7);
+                        imageValid = true;
+                        resolve(base64);
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        let compressedAvatar = null;
+
+        imginput.addEventListener('change', async function () {
+            if (this.files.length > 0) {
+                let file = this.files[0];
+
+                // Предпросмотр
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById("avatar").src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+
+                // Сжимаем
+                compressedAvatar = await compressImage(file);
+            }
+        });
+
+        regbutton.addEventListener("click", async () => {
+            if (!canreg || !compressedAvatar) return;
+
+            const username = localStorage.getItem("putusername");
+
+            // Обновляем avatar в profiles
+            const res = await fetch(
+                `${SUPABASE_URL}/rest/v1/profiles?username=eq.${encodeURIComponent(username)}`,
+                {
+                    method: "PATCH",
+                    headers: {
+                        "apikey": SUPABASE_KEY,
+                        "Authorization": `Bearer ${SUPABASE_KEY}`,
+                        "Content-Type": "application/json",
+                        "Prefer": "return=representation"
+                    },
+                    body: JSON.stringify({ avatar: compressedAvatar })
+                }
+            );
+
+            if (!res.ok) {
+                alert("Ошибка при сохранении аватара!");
+                return;
+            }
+
+            localStorage.setItem("putavatar", compressedAvatar);
+            window.location.href = "main.html";
+        });
+
+        if (localStorage.getItem("putname") && localStorage.getItem("putusername") && localStorage.getItem("putavatar")) {
+            window.location.href = "main.html";
+        }
+
+        document.getElementById("name").textContent = localStorage.getItem("putname") || "Аноним";
+        document.getElementById("username").textContent = localStorage.getItem("putusername") || "@anonym";
+
+        if (!localStorage.getItem("putheme")) localStorage.setItem("putheme", "dark");
+    document.body.setAttribute('data-theme', localStorage.getItem("putheme")); 
+    </script>
+</body>
+</html>

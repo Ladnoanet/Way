@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>путь</title>
+    <link rel="shortcut icon" href="logo.svg" type="image/x-icon">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            background: var(--bcg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        * {
+            scrollbar-width: none;
+            -ms-overflow-style: none; 
+            outline: none;
+            }
+            *::-webkit-scrollbar {
+                display: none;
+            }
+
+        button {
+            img { filter: var(--invert); opacity: 0.3; }
+            &.active { 
+                & img { opacity: 1; } 
+            }
+        }
+
+        header {
+            width: 100%;
+            height: auto;
+            background: var(--bcg);
+
+            & .first {
+                height: 50px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0 15px 0 15px;
+
+                & .logo {
+                    height: 30%;
+                }
+
+                & .btsh {
+                    height: 100%;
+                    display: flex;
+                    align-items: center;
+                    gap: 15px;
+                }
+
+                & button {
+                    background: none;
+                    border: 0;
+                    border-radius: 0;
+                    height: 100%;
+                    & img { height: 40%; }
+                }
+            }
+
+            & .second {
+                width: 100%;
+                height: 40px;
+                display: flex;
+                align-items: flex-start;
+                justify-content: flex-start;
+                overflow-x: auto;
+                gap: 5px;
+                padding: 0 15px 0 15px;
+
+                & button {
+                    height: 30px;
+                    font-size: 14px;
+                    border: 0;
+                    padding: 0 10px;
+                    background: var(--el);
+                    color: var(--text);
+                    border-radius: 20px;
+                    &.active {
+                        background: var(--white);
+                        color: var(--black)
+                    }
+                }
+            }
+        }
+
+        footer {
+            width: 100%;
+            background: var(--el);
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-evenly;
+            flex-shrink: 0;
+
+            & button {
+                background: none;
+                border: 0;
+                height: 100%;
+                & img { height: 40%; }
+            }
+        }
+
+        main {
+            flex: 1;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            
+            & .mainblock {
+                width: 100%;
+                height: 100%;
+                display: none;
+                padding: 10px 15px;
+                overflow-y: auto;
+
+                &.active { display: flex; }
+            }
+
+            & .ls, .policeoftemp, .vidofapp, .pinned, .channelssub, .channels, .search, .settings, .profileditor {
+                flex-direction: column;
+                align-items: center;
+                justify-content: flex-start;
+                gap: 15px;
+            }
+
+            & .chatlink {
+                width: 100%;
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+                gap: 10px;
+
+                & img { height: 50px; border-radius: 50%; }
+                & p { font-size: 20px; }
+                & span { height: 25px; aspect-ratio: 1 / 1; background: var(--accent);
+                display: flex; justify-content: center; align-items: center; border-radius: 50%; }
+                & .leftofchat {
+                    display: flex;
+                    justify-content: flex-start;
+                    align-items: center;
+                    gap: 10px;
+                }
+                &.pin {
+                    justify-content: space-between;
+                    & #pin { height: 50%; filter: var(--invert); opacity: 0.3; }
+                }
+            }
+
+            & .channels, .search {
+                & input {
+                    width: 100%;
+                    height: 40px;
+                    border: 0;
+                    border-radius: 10px;
+                    background: var(--el);
+                    outline: none;
+                    padding: 0 15px;
+                }
+            }
+
+            & .settings {
+
+                & .usersethero {
+                    width: 100%;
+                    border-radius: 10px;
+                    background: radial-gradient(#6a9eff, #4183FF);
+                    box-sizing: border-box;
+                    padding: 20px;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    text-align: center;
+
+                    & img { width: 30%; border-radius: 50%; }
+                    & h1 { font-weight: 500; }
+                }
+
+                & .buttonst {
+                    width: 100%;
+                    background: var(--el);
+                    border-radius: 10px;
+                }
+
+                & hr { border: 1px solid var(--hr); }
+
+                button {
+                    display: flex;
+                    align-items: center; justify-content: center;
+                    background: none;
+                    border: 0;
+                    border-radius: 10px;
+                    color: var(--text);
+                    width: 100%;
+                    height: 40px;
+                }
+            }
+
+            & .create {
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                gap: 10px;
+
+                & img {
+                    width: 30%;
+                    filter: var(--invert)
+                }
+
+                & h1 {
+                    font-size: 25px;
+                    font-weight: 400;
+                }
+
+                & input {
+                    width: 100%;
+                    height: 40px;
+                    border: 0;
+                    border-radius: 10px;
+                    background: var(--el);
+                    outline: none;
+                    padding: 0 15px;
+                    margin-top: 30px;
+                }
+
+                & button {
+                    width: 100%;
+                    height: 40px;
+                    display: flex;
+                    align-items: center; justify-content: center;
+                    background: var(--el);
+                    border: 0;
+                    border-radius: 10px;
+                    color: var(--textnot);
+
+                    &.active { background: var(--accent); color: var(--butwhitetext); }
+                }
+            }
+
+            & .profileditor {
+                & .usersethero {
+                    width: 100%;
+                    border-radius: 10px;
+                    background: radial-gradient(#6a9eff, #4183FF);
+                    box-sizing: border-box;
+                    padding: 20px;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    text-align: center;
+
+                    & img { width: 30%; border-radius: 50%; }
+                    & h1 { font-weight: 500; }
+                }
+
+                & input {
+                    width: 100%;
+                    height: 40px;
+                    border: 0;
+                    border-radius: 10px;
+                    background: var(--el);
+                    outline: none;
+                    padding: 0 15px;
+                }
+
+                & label {
+                    width: 100%;
+                    height: 40px;
+                    background: var(--el);
+                    display: flex;
+                    align-items: center; justify-content: center;
+                    border: 0;
+                    border-radius: 10px;
+                    font-size: 13px;
+                }
+
+                & button {
+                    width: 100%;
+                    height: 40px;
+                    display: flex;
+                    align-items: center; justify-content: center;
+                    background: var(--el);
+                    border: 0;
+                    border-radius: 10px;
+                    color: var(--textnot);
+
+                    &.active { background: var(--accent); color: var(--butwhitetext); }
+                }
+            }
+
+            & .vidofapp {
+                & .exampleoftheme {
+                    width: 100%;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                    box-sizing: border-box;
+                    padding: 25px 15px;
+                    background: var(--chatbcgexp);
+                    border-radius: 10px;
+                    justify-content: flex-start;
+                    align-items: flex-start;
+
+                    & .yourmsg {
+                        margin-left: auto;
+                        box-sizing: border-box;
+                        padding: 10px;
+                        background: var(--yourmsg);
+                        border-radius: 20px 20px 5px 20px;
+                    }
+                    & .hismsg {
+                        margin-right: auto;
+                        box-sizing: border-box;
+                        padding: 10px;
+                        background: var(--hismsg);
+                        border-radius: 20px 20px 20px 5px;
+                    }
+                }
+                & .buttonst {
+                    width: 100%;
+                    background: var(--el);
+                    border-radius: 10px;
+                }
+
+                & hr { border: 1px solid var(--hr); }
+
+                button {
+                    display: flex;
+                    align-items: center; justify-content: center;
+                    background: none;
+                    border: 0;
+                    border-radius: 10px;
+                    color: var(--text);
+                    width: 100%;
+                    height: 40px;
+                }
+                
+                & .hofr {
+                    width: 100%;
+                    text-align: left;
+                    margin-bottom: -5px;
+                    color: var(--textnot);
+                }
+            }
+
+            & .policeoftemp {
+                & .buttonst {
+                    width: 100%;
+                    background: var(--el);
+                    border-radius: 10px;
+                }
+
+                & hr { border: 1px solid var(--hr); }
+
+                button {
+                    display: flex;
+                    align-items: center; justify-content: center;
+                    background: none;
+                    border: 0;
+                    border-radius: 10px;
+                    color: var(--text);
+                    width: 100%;
+                    height: 40px;
+                }
+                
+                & .hofr {
+                    width: 100%;
+                    text-align: left;
+                    margin-bottom: -5px;
+                    color: var(--textnot);
+                }
+
+                & img {
+                    width: 30%;
+                    filter: var(--invert)
+                }
+
+                & .booleanblock {
+                    width: 100%;
+                    height: 40px;
+                    border-radius: 10px;
+                    background: var(--el);
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    box-sizing: border-box;
+                    padding: 0px 5px 0px 10px;
+
+                    & .boolean {
+                        width: 55px;
+                        height: 30px;
+                        background: var(--bcg);
+                        border-radius: 25px;
+                        box-sizing: border-box;
+                        padding: 5px;
+                        display: flex;
+                        align-items: center;
+
+                        & div {
+                            height: 100%;
+                            aspect-ratio: 1 / 1;
+                            background: var(--text);
+                            border-radius: 50%;
+                        }
+                    }
+                }
+            }
+        }        
+    </style>
+</head>
+<body data-theme="dark">
+    <header>
+        <div class="first">
+            <img class="logo" src="full-logo.svg" alt="путь">
+            <div class="btsh">
+                <button onclick="setmain(3, 5)" class="active"><img src="search.png" alt="search"></button>
+                <button onclick="setmain(2, 7)" class="active"><img src="new.svg" alt="search"></button>
+            </div>
+        </div>
+        <div id="secondhead" class="second">
+            <button onclick="settag(1, 1)" id="1tag" class="active">ЛС-ки</button>
+            <button onclick="settag(2, 2)" id="2tag">Закрепы</button>
+            <button onclick="settag(3, 3)" id="3tag">Каналы</button>
+        </div>
+    </header>
+    <main>
+        <div id="1m" class="mainblock ls active" id="chats">
+            <!--<div onclick="openchat('exampleIdOfDialog')" class="chatlink">
+                <img id="avatar_of_user" src="user.png" alt="ава">
+                <p id="name_user">Nameofuser</p>
+                <span style="opacity: 0;" id="num_of_new_messages">0</span>
+            </div>-->
+        </div>
+        <div id="2m" class="mainblock pinned" id="pinnedchats">
+            <!--<div onclick="openchat('exampleIdOfDialog')" class="chatlink pin">
+                <div class="leftofchat">
+                    <img id="avatar_of_user" src="user.png" alt="ава">
+                    <p id="name_user">Nameofuser</p>
+                    <span style="opacity: 0;" id="num_of_new_messages">0</span>
+                </div>
+                <img id="pin" src="pinned.svg" alt="закреплено">
+            </div>-->
+        </div>
+        <div id="3m" class="mainblock channelssub" id="subscribechannelsscreen">
+            <!--<div onclick="openchannel('exampleIdOfidchannel')" class="chatlink">
+                <img style="border-radius: 30%;" id="avatar_of_channel" src="channel.png" alt="ава">
+                <p id="name_channel">Nameofchannel</p>
+            </div>-->
+        </div>
+        <div id="4m" class="mainblock channels" id="searchchannelsscreen">
+            <input type="text" placeholder="поиск каналов...">
+            <!--<div onclick="openchannel('exampleIdOfidchannel')" class="chatlink">
+                <img style="border-radius: 30%;" id="avatar_of_channel" src="channel.png" alt="ава">
+                <p id="name_channel">Nameofchannel</p>
+            </div>-->
+        </div>
+        <div id="5m" class="mainblock search" id="searchscreen">
+            <input type="text" placeholder="поиск пользователей...">
+            <!--<div onclick="openchat('exampleIdOfDialog')" class="chatlink">
+                <img id="avatar_of_user" src="user.png" alt="ава">
+                <p id="name_user">Nameofuser</p>
+                <span style="opacity: 0;" id="num_of_new_messages">0</span>
+            </div>-->
+        </div>
+        <div id="6m" class="mainblock settings">
+            <div class="usersethero">
+                <img id="mineava" src="user.png" alt="user">
+                <h1 id="minename">User</h1>
+                <p id="mineusername">@username</p>
+            </div>
+            <div class="buttonst">
+                <button onclick="setmain(4, 8)">Профиль</button>
+                <hr>
+                <button onclick="setmain(4, 9)">Внешний вид</button>
+            </div>
+            <div class="buttonst">
+                <button onclick="setmain(4, 10)">Уведомления</button>
+                <hr>
+                <button onclick="setmain(4, 11)">Конфиденциальность</button>                
+            </div>
+            <div style="background: var(--red);" class="buttonst">
+                <button style="color: var(--butwhitetext)" onclick="deleteaccount()">Удалить аккаунт</button>
+            </div>
+
+        </div>
+
+        <div id="7m" class="mainblock create">
+            <img src="channels.png" alt="канал">
+            <h1>Создать канал!</h1>
+
+            <input maxlength="15" id="nameofchannelinput" type="text" placeholder="название канала...">
+            <button id="btncreate">Создать!</button>
+        </div>
+
+        <div id="8m" class="mainblock profileditor">
+            <div class="usersethero">
+                <img id="mineavaed" src="user.png" alt="user">
+                <h1 id="minenameed">User</h1>
+                <p id="mineusernameed">@username</p>
+            </div>
+            <input maxlength="15" id="nameinput" type="text" placeholder="изменить имя">
+            <input style="color: var(--textnot);" maxlength="15" id="usernameinput" type="text" placeholder="изменить юзернейм" disabled>
+            <label for="imageInput" class="upload__photo">
+                Выберите изображение
+            </label>
+            <input type="file" accept=".jpg,.jpeg,.png,.gif" id="imageInput" style="display:none;">
+            <button id="saveedits">Сохранить</button>
+        </div>
+        <div id="9m" class="mainblock vidofapp">
+            <div class="exampleoftheme">
+                <div class="yourmsg">Привет! :3</div>
+                <div class="hismsg">И тебе!! :D</div>
+            </div>
+            <p class="hofr">тема</p>
+            <div class="buttonst">
+                <button onclick="settheme('white')">Светлая</button>
+                <hr>
+                <button onclick="settheme('dark')">Темная</button>
+            </div>
+        </div>
+        <div id="10m" class="mainblock notifications create">
+            <img src="notifications.svg" alt="канал">
+            <h1 style="text-align: center;">Эта функция пока не реализована!</h1>
+        </div>
+        <div id="11m" class="mainblock policeoftemp">
+            <img src="lock.png" alt="замок">
+            <p class="hofr">видимость</p>
+            <!--<div class="buttonst">
+                <button onclick="settheme('white')">Светлая</button>
+                <hr>
+                <button onclick="settheme('dark')">Темная</button>
+            </div>-->
+            <div class="booleanblock">
+                <p>Показывать меня</p>
+                <div onclick="showme()" class="boolean">
+                    <div id="boolean1"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <button onclick="setmain(1, 1)" id="1fot" class="active"><img src="chats.png" alt="чаты"></button>
+        <button onclick="setmain(2, 4)" id="2fot"><img src="channels.png" alt="чаты"></button>
+        <button onclick="setmain(3, 5)" id="3fot"><img src="search.png" alt="чаты"></button>
+        <button onclick="setmain(4, 6)" id="4fot"><img src="settings.png" alt="чаты"></button>
+    </footer>
+<script>
+    const SUPABASE_URL = "https://xcowyhnhdpqhegthjmsa.supabase.co";
+    const SUPABASE_KEY = atob("ZXlKaGJHY2lPaUpJVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SnBjM01pT2lKemRYQmhZbUZ6WlNJc0luSmxaaUk2SW5oamIzZDVhRzVvWkhCeGFHVm5kR2hxYlhOaElpd2ljbTlzWlNJNkltRnViMjRpTENKcFlYUWlPakUzTnpNM016WTRPVGtzSW1WNGNDSTZNakE0T1RNeE1qZzVPWDAuV1g3dDZ2cG1yYmhfaFJiME90UWdpa09UUnRNbmZ6anFQUHloWHNaSmhPQQ==");
+    const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const MY_USERNAME = localStorage.getItem("putusername");
+    const MY_NAME = localStorage.getItem("putname");
+
+    if (!MY_USERNAME || !MY_NAME) window.location.href = "index.html";
+
+    let current_main_screen = 1;
+
+    function settag(num, scr) {
+        for (let i = 1; i < 4; i++) document.getElementById(i + "tag").classList.remove("active");
+        document.getElementById(num + "tag").classList.add("active");
+        current_main_screen = scr;
+        for (let i = 1; i < 12; i++) document.getElementById(i + "m").classList.remove("active");
+        document.getElementById(scr + "m").classList.add("active");
+    }
+
+    function setmain(numm, scrr) {
+        for (let i = 1; i < 5; i++) document.getElementById(i + "fot").classList.remove("active");
+        document.getElementById(numm + "fot").classList.add("active");
+        current_main_screen = scrr;
+        document.getElementById("secondhead").style.display =
+            (scrr == 1 || scrr == 2 || scrr == 3) ? "flex" : "none";
+        for (let i = 1; i < 12; i++) document.getElementById(i + "m").classList.remove("active");
+        document.getElementById(scrr + "m").classList.add("active");
+    }
+
+    function openchat(idofchat) { window.location.href = "chat.html?chatid=" + idofchat; }
+    function openchannel(idofchannel) { window.location.href = "channel.html?channelid=" + idofchannel; }
+
+    // Данные пользователя
+    document.getElementById("mineusername").textContent = MY_USERNAME;
+    document.getElementById("minename").textContent = MY_NAME;
+    document.getElementById("mineusernameed").textContent = MY_USERNAME;
+    document.getElementById("minenameed").textContent = MY_NAME;
+    document.getElementById("mineavaed").src = localStorage.getItem("putavatar") || "user.png";
+    document.getElementById("mineava").src = localStorage.getItem("putavatar") || "user.png";
+    document.getElementById("nameinput").value = MY_NAME;
+    document.getElementById("usernameinput").value = MY_USERNAME;
+
+    // Тема
+    if (!localStorage.getItem("putheme")) localStorage.setItem("putheme", "dark");
+    document.body.setAttribute('data-theme', localStorage.getItem("putheme"));
+
+    function settheme(themename) {
+        document.body.setAttribute('data-theme', themename);
+        localStorage.setItem("putheme", themename);
+    }
+
+    // Видимость профиля
+    if (!localStorage.getItem("putshowme")) localStorage.setItem("putshowme", "true");
+    let ifshowme = localStorage.getItem("putshowme") === "true";
+    document.getElementById("boolean1").style.marginLeft = ifshowme ? "25px" : "0px";
+
+    async function showme() {
+        ifshowme = !ifshowme;
+        localStorage.setItem("putshowme", ifshowme.toString());
+        document.getElementById("boolean1").style.marginLeft = ifshowme ? "25px" : "0px";
+        await db.from("profiles").update({ showme: ifshowme }).eq("username", MY_USERNAME);
+    }
+
+    // Удаление аккаунта
+    async function deleteaccount() {
+        if (!confirm("Удалить аккаунт? Это необратимо!")) return;
+        await db.from("profiles").delete().eq("username", MY_USERNAME);
+        localStorage.clear();
+        window.location.href = "index.html";
+    }
+
+    // --- Кнопки ---
+    const namechannel_input = document.getElementById("nameofchannelinput");
+    const createbutton = document.getElementById("btncreate");
+    let cancreate = false;
+    let canedit = false;
+
+    function checkbutton() {
+        cancreate = namechannel_input.value.length > 3;
+        createbutton.classList.toggle("active", cancreate);
+        canedit = document.getElementById("nameinput").value.length > 3;
+        document.getElementById("saveedits").classList.toggle("active", canedit);
+    }
+    setInterval(checkbutton, 50);
+
+    // Создание канала
+    createbutton.addEventListener("click", async () => {
+        if (!cancreate) return;
+        const channelName = namechannel_input.value.trim();
+
+        const { data, error } = await db.from("channels").insert({
+            namechannel: channelName,
+            creator: MY_USERNAME
+        }).select().single();
+
+        if (error) { alert("Ошибка при создании канала!"); return; }
+
+        let myChannels = JSON.parse(localStorage.getItem("putchannels") || "[]");
+        myChannels.push(data.id);
+        localStorage.setItem("putchannels", JSON.stringify(myChannels));
+
+        namechannel_input.value = "";
+        setmain(1, 1);
+        settag(3, 3);
+        loadchannels();
+    });
+
+    // Сжатие изображения
+    function compressImage(file, maxSize = 256) {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = new Image();
+                img.onload = function () {
+                    if (img.width !== img.height) { alert("Картинка должна быть квадратной (1:1)!"); resolve(null); return; }
+                    const canvas = document.createElement("canvas");
+                    canvas.width = maxSize; canvas.height = maxSize;
+                    canvas.getContext("2d").drawImage(img, 0, 0, maxSize, maxSize);
+                    resolve(canvas.toDataURL("image/jpeg", 0.7));
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    let newAvatarBase64 = null;
+    document.getElementById("imageInput").addEventListener("change", async function () {
+        if (this.files.length > 0) {
+            newAvatarBase64 = await compressImage(this.files[0]);
+            if (newAvatarBase64) document.getElementById("mineavaed").src = newAvatarBase64;
+        }
+    });
+
+    // Сохранение профиля
+    document.getElementById("saveedits").addEventListener("click", async () => {
+        if (!canedit) return;
+        const newName = document.getElementById("nameinput").value.trim();
+        const updates = { name: newName };
+        if (newAvatarBase64) updates.avatar = newAvatarBase64;
+
+        const { error } = await db.from("profiles").update(updates).eq("username", MY_USERNAME);
+        if (error) { alert("Ошибка при сохранении!"); return; }
+
+        localStorage.setItem("putname", newName);
+        if (newAvatarBase64) {
+            localStorage.setItem("putavatar", newAvatarBase64);
+            document.getElementById("mineava").src = newAvatarBase64;
+        }
+        document.getElementById("minename").textContent = newName;
+        document.getElementById("minenameed").textContent = newName;
+        newAvatarBase64 = null;
+        setmain(4, 6);
+    });
+
+    // --- Поиск пользователей ---
+    const searchInput = document.getElementById("5m").querySelector("input");
+    let isRenderingUsers = false;
+
+    async function renderUsers(query = "") {
+        if (isRenderingUsers) return;
+        isRenderingUsers = true;
+
+        const container = document.getElementById("5m");
+        container.querySelectorAll(".chatlink").forEach(el => el.remove());
+
+        let req = db.from("profiles")
+            .select("username, name, avatar")
+            .neq("username", MY_USERNAME)
+            .eq("showme", true)
+            .limit(50);
+
+        if (query.length >= 2) req = req.ilike("username", `%${query}%`);
+
+        const { data: users } = await req;
+        container.querySelectorAll(".chatlink").forEach(el => el.remove());
+
+        if (users && users.length > 0) {
+            const seen = new Set();
+            users.forEach(user => {
+                if (seen.has(user.username)) return;
+                seen.add(user.username);
+                const div = document.createElement("div");
+                div.className = "chatlink";
+                div.innerHTML = `
+                    <img src="${user.avatar || 'user.png'}" alt="ава">
+                    <p>${user.name}</p>
+                    <span style="opacity:0;">0</span>
+                `;
+                div.addEventListener("click", () => openOrCreateChat(user.username));
+                container.appendChild(div);
+            });
+        }
+
+        isRenderingUsers = false;
+    }
+
+    renderUsers();
+    searchInput.addEventListener("input", async () => await renderUsers(searchInput.value.trim()));
+
+    // --- Поиск каналов ---
+    const channelSearchInput = document.getElementById("4m").querySelector("input");
+    let isRenderingChannelSearch = false;
+
+    async function renderChannelSearch(query = "") {
+        if (isRenderingChannelSearch) return;
+        isRenderingChannelSearch = true;
+
+        const container = document.getElementById("4m");
+        container.querySelectorAll(".chatlink").forEach(el => el.remove());
+
+        let req = db.from("channels").select("id, namechannel").limit(50);
+        if (query.length >= 2) req = req.ilike("namechannel", `%${query}%`);
+
+        const { data: channels } = await req;
+        container.querySelectorAll(".chatlink").forEach(el => el.remove());
+
+        if (channels && channels.length > 0) {
+            const seen = new Set();
+            channels.forEach(ch => {
+                if (seen.has(ch.id)) return;
+                seen.add(ch.id);
+                const div = document.createElement("div");
+                div.className = "chatlink";
+                div.innerHTML = `
+                    <img style="border-radius:30%;" src="channel.png" alt="ава">
+                    <p>${ch.namechannel}</p>
+                `;
+                div.addEventListener("click", () => openchannel(ch.id));
+                container.appendChild(div);
+            });
+        }
+
+        isRenderingChannelSearch = false;
+    }
+
+    renderChannelSearch();
+    channelSearchInput.addEventListener("input", async () => await renderChannelSearch(channelSearchInput.value.trim()));
+
+    // --- openOrCreateChat ---
+    async function openOrCreateChat(targetUsername) {
+        const { data: convs } = await db.from("conversations").select("id, members_ids");
+
+        const existing = convs?.find(c =>
+            c.members_ids.includes(MY_USERNAME) && c.members_ids.includes(targetUsername)
+        );
+
+        if (existing) { openchat(existing.id); return; }
+
+        const { data: newConv, error } = await db
+            .from("conversations")
+            .insert({ members_ids: [MY_USERNAME, targetUsername] })
+            .select()
+            .single();
+
+        if (error) { alert("Ошибка при создании чата!"); return; }
+        openchat(newConv.id);
+    }
+
+    // --- Загрузка чатов (real-time) ---
+    let isRenderingChats = false;
+
+    async function renderChats() {
+        if (isRenderingChats) return;
+        isRenderingChats = true;
+
+        const container1 = document.getElementById("1m");
+        const container2 = document.getElementById("2m");
+        container1.innerHTML = "";
+        container2.innerHTML = "";
+
+        const { data: convs } = await db.from("conversations").select("id, members_ids");
+        const myConvs = convs?.filter(c => c.members_ids.includes(MY_USERNAME)) || [];
+
+        container1.innerHTML = "";
+        container2.innerHTML = "";
+
+        const seenConvs = new Set();
+        for (const conv of myConvs) {
+            if (seenConvs.has(conv.id)) continue;
+            seenConvs.add(conv.id);
+
+            const otherUsername = conv.members_ids.find(u => u !== MY_USERNAME);
+            const { data: profile } = await db.from("profiles").select("name, avatar").eq("username", otherUsername).single();
+
+            const name = profile?.name || otherUsername;
+            const avatar = profile?.avatar || "user.png";
+
+            const div1 = document.createElement("div");
+            div1.className = "chatlink";
+            div1.innerHTML = `<img src="${avatar}" alt="ава"><p>${name}</p><span style="opacity:0;">0</span>`;
+            div1.addEventListener("click", () => openchat(conv.id));
+            container1.appendChild(div1);
+
+            const div2 = document.createElement("div");
+            div2.className = "chatlink pin";
+            div2.innerHTML = `
+                <div class="leftofchat">
+                    <img src="${avatar}" alt="ава">
+                    <p>${name}</p>
+                    <span style="opacity:0;">0</span>
+                </div>
+                <img src="pinned.svg" alt="закреплено">
+            `;
+            div2.addEventListener("click", () => openchat(conv.id));
+            container2.appendChild(div2);
+        }
+
+        isRenderingChats = false;
+    }
+
+    async function loadchats() {
+        await renderChats();
+        db.channel("conversations-changes")
+            .on("postgres_changes", { event: "*", schema: "public", table: "conversations" }, () => renderChats())
+            .on("postgres_changes", { event: "*", schema: "public", table: "messages" }, () => renderChats())
+            .subscribe();
+    }
+
+    // --- Загрузка каналов (real-time) ---
+    let isRenderingChannels = false;
+
+    async function renderChannels() {
+        if (isRenderingChannels) return;
+        isRenderingChannels = true;
+
+        const container3 = document.getElementById("3m");
+        container3.innerHTML = "";
+
+        const myChannelIds = JSON.parse(localStorage.getItem("putchannels") || "[]");
+
+        if (myChannelIds.length > 0) {
+            const { data: channels } = await db.from("channels").select("id, namechannel, creator").in("id", myChannelIds);
+            container3.innerHTML = "";
+
+            const seen = new Set();
+            channels?.forEach(ch => {
+                if (seen.has(ch.id)) return;
+                seen.add(ch.id);
+                const div = document.createElement("div");
+                div.className = "chatlink";
+                div.innerHTML = `
+                    <img style="border-radius:30%;" src="channel.png" alt="ава">
+                    <p>${ch.namechannel}</p>
+                `;
+                div.addEventListener("click", () => openchannel(ch.id));
+                container3.appendChild(div);
+            });
+        }
+
+        isRenderingChannels = false;
+    }
+
+    async function loadchannels() {
+        await renderChannels();
+        db.channel("channels-changes")
+            .on("postgres_changes", { event: "*", schema: "public", table: "channels" }, () => renderChannels())
+            .subscribe();
+    }
+
+    loadchats();
+    loadchannels();
+</script>
+</body>
+</html>

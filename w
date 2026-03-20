@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>путь</title>
+    <link rel="shortcut icon" href="logo.svg" type="image/x-icon">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+<body data-theme="dark">
+    <header id="header">
+        <button onclick="window.location.href = 'main.html'" class="active"><img src="back.svg" alt="назад"></button>
+        <div onclick="setmain(2)" class="user">
+            <img src="channel.png" alt="user">
+            <p id="channelname">NameofChannel</p>
+        </div>
+    </header>
+    <main>
+        <div id="1m" class="mainblock chat active" id="chats">
+            <!--<div class="yourmsg">
+                <div class="answer"></div>
+                <span>Текст сообщение</span>
+                <div class="reactions-list"></div>
+                <span class="time">00:00</span>
+            </div>
+            <div class="hismsg">
+                <div class="answer"></div>
+                <span>Текст сообщение</span>
+                <div class="reactions-list"></div>
+                <span class="time">00:00</span>
+            </div>
+            
+            пример с изображением
+            <div class="yourmsg">
+                <div class="answer"></div>
+                <img src="file.svg" alt="file">
+                <span>Текст сообщение</span>
+                <div class="reactions-list"></div>
+                <span class="time">00:00</span>
+            </div>
+            <div class="hismsg">
+                <div class="answer"></div>
+                <img src="file.svg" alt="file">
+                <span>Текст сообщение</span>
+                <div class="reactions-list"></div>
+                <span class="time">00:00</span>
+            </div>
+            
+            пример с реакцией
+            <div class="yourmsg">
+                <div class="answer"></div>
+                <span>Текст сообщение</span>
+                <div class="reactions-list">
+                    <span class="reaction" style="margin-top: 5px; margin-right: 5px;">❤</span>
+                </div>
+                <span class="time">00:00</span>
+            </div>
+            <div class="hismsg">
+                <div class="answer"></div>
+                <span>Текст сообщение</span>
+                <div class="reactions-list">
+                    <span class="reaction" style="margin-top: 5px; margin-right: 5px;">😇</span>
+                </div>
+                <span class="time">00:00</span>
+            </div>
+
+            пример с ответом
+            <div class="yourmsg">
+                <div class="answer">↪ Текст сообщения собеседника...</div>
+                <span>Текст сообщение</span>
+                <div class="reactions-list"></div>
+                <span class="time">00:00</span>
+            </div>
+            <div class="hismsg">
+                <div class="answer">↪ Текст сообщения собеседника...</div>
+                <span>Текст сообщение</span>
+                <div class="reactions-list"></div>
+                <span class="time">00:00</span>
+            </div>
+        -->
+            
+        </div>
+        <div id="2m" class="mainblock about_user">
+            <div class="back">
+                <button onclick="setmain(1)" class="active"><img src="back.svg" alt="back"></button>
+                <h1>Назад</h1>
+            </div>
+            <div class="usersethero">
+                <img src="channel.png" alt="user">
+                <h1 id="channelnameed">Channel</h1>
+            </div>
+            <div class="buttonst">
+                <p>Публичный канал</p>
+            </div>
+        </div>
+    </main>
+    <footer id="footer">
+        <button onclick="showstickers()" class="other"><img src="stickers.svg" alt="стикеры"></button>
+        <label for="imageInput" class="other"><img src="file.svg" alt="файл"></label>
+        <input type="file" accept=".jpg,.jpeg,.png,.gif" id="imageInput" style="display:none;">
+        <input type="text" placeholder="введите сообщение..." id="msgtext">
+        <button id="sendbutton" class="send"><img id="sendbtnimg" src="send.svg" alt="send"></button>
+    </footer>
+    <div id="imgpreviewblock" style="bottom: -70px;" class="imgpreview">
+        <img id="imgpreview" src="file.svg" alt="file">
+    </div>
+    <div id="stickerspreviewblock" style="bottom: -155px;" class="stickerpreview">
+        <img onclick="sendsticker(':stick1:')" src="sticker.png" alt="file">
+        <img onclick="sendsticker(':stick2:')" src="sticker2.png" alt="file">
+        <img onclick="sendsticker(':stick3:')" src="sticker3.png" alt="file">
+    </div>
+
+    <div class="Reactions" style="position:fixed;">
+        <button onclick="handleReaction('❤️')">❤️</button>
+        <button onclick="handleReaction('😇')">😇</button>
+        <button onclick="handleReaction('🥰')">🥰</button>
+        <button onclick="handleReaction('😮')">😮</button>
+        <button onclick="handleReaction('😭')">😭</button>
+        <button onclick="handleReaction('😨')">😨</button>
+    </div>
+    <div class="message-actions" style="position:fixed;">
+        <i data-action="copy" onclick="handleAction('copy')"><span>Копировать</span></i>
+    </div>
+
+<script>
+    /*const SUPABASE_URL = "https://xcowyhnhdpqhegthjmsa.supabase.co";*/
+    const SUPABASE_KEY = atob("ZXlKaGJHY2lPaUpJVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SnBjM01pT2lKemRYQmhZbUZ6WlNJc0luSmxaaUk2SW5oamIzZDVhRzVvWkhCeGFHVm5kR2hxYlhOaElpd2ljbTlzWlNJNkltRnViMjRpTENKcFlYUWlPakUzTnpNM016WTRPVGtzSW1WNGNDSTZNakE0T1RNeE1qZzVPWDAuV1g3dDZ2cG1yYmhfaFJiME90UWdpa09UUnRNbmZ6anFQUHloWHNaSmhPQQ==");
+    const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const MY_USERNAME = localStorage.getItem("putusername");
+    const MY_NAME = localStorage.getItem("putname");
+    if (!MY_USERNAME || !MY_NAME) window.location.href = "index.html";
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const CHAT_ID = urlParams.get("chatid");
+    if (!CHAT_ID) window.location.href = "main.html";
+
+    let HIS_USERNAME = "";
+    let selectedImageBase64 = null;
+    let activeMsgId = null; // id сообщения для которого открыта панель
+
+    // Панели
+    const reactionsPanel = document.querySelector(".Reactions");
+    const actionsPanel = document.querySelector(".message-actions");
+    reactionsPanel.style.display = "none";
+    actionsPanel.style.display = "none";
+
+    let current_main_screen = 1;
+    function setmain(scrr) {
+        current_main_screen = scrr;
+        for (let i = 1; i < 3; i++) document.getElementById(i + "m").classList.remove("active");
+        document.getElementById(scrr + "m").classList.add("active");
+        if (scrr == 1) {
+            document.getElementById("header").style.display = "flex";
+            document.getElementById("footer").style.display = "flex";
+        } else {
+            document.getElementById("header").style.display = "none";
+            document.getElementById("footer").style.display = "none";
+        }
+        hidePanels();
+    }
+
+    if (!localStorage.getItem("putheme")) localStorage.setItem("putheme", "dark");
+    document.body.setAttribute('data-theme', localStorage.getItem("putheme"));
+
+    function settheme(themename) {
+        document.body.setAttribute('data-theme', themename);
+        localStorage.setItem("putheme", themename);
+    }
+
+    function hidePanels() {
+        reactionsPanel.style.display = "none";
+        actionsPanel.style.display = "none";
+        activeMsgId = null;
+    }
+
+    // Клик вне панелей — скрываем
+    document.addEventListener("click", (e) => {
+        if (!reactionsPanel.contains(e.target) && !actionsPanel.contains(e.target) && !e.target.closest(".yourmsg, .hismsg")) {
+            hidePanels();
+        }
+    });
+
+    // Показ панелей при клике на сообщение
+    function showPanels(msgEl, msgId, isMine) {
+        if (activeMsgId === msgId) { hidePanels(); return; }
+        activeMsgId = msgId;
+
+        const rect = msgEl.getBoundingClientRect();
+        const scrollY = window.scrollY || document.documentElement.scrollTop;
+
+        // Позиция панели реакций — чуть выше сообщения
+        reactionsPanel.style.display = "flex";
+        reactionsPanel.style.top = (rect.top + scrollY - 45) + "px";
+
+        // Позиция панели действий — чуть ниже реакций
+        actionsPanel.style.display = "flex";
+        actionsPanel.style.top = (rect.top + scrollY - 45 + 40) + "px";
+
+        if (isMine) {
+            reactionsPanel.style.left = "auto";
+            reactionsPanel.style.right = (window.innerWidth - rect.right) + "px";
+            actionsPanel.style.left = "auto";
+            actionsPanel.style.right = (window.innerWidth - rect.right) + "px";
+        } else {
+            reactionsPanel.style.left = rect.left + "px";
+            reactionsPanel.style.right = "auto";
+            actionsPanel.style.left = rect.left + "px";
+            actionsPanel.style.right = "auto";
+        }
+
+        // Показываем/скрываем кнопки изменить и удалить
+        const deleteBtn = actionsPanel.querySelector("[data-action='delete']");
+        const editBtn = actionsPanel.querySelector("[data-action='edit']");
+        if (deleteBtn) deleteBtn.style.display = isMine ? "flex" : "none";
+        if (editBtn) editBtn.style.display = isMine ? "flex" : "none";
+    }
+
+    // Загрузка информации о собеседнике
+    async function loadChatInfo() {
+        const { data: conv } = await db
+            .from("conversations")
+            .select("members_ids")
+            .eq("id", CHAT_ID)
+            .single();
+
+        if (!conv) { window.location.href = "main.html"; return; }
+
+        HIS_USERNAME = conv.members_ids.find(u => u !== MY_USERNAME);
+
+        const { data: profile } = await db
+            .from("profiles")
+            .select("name, avatar")
+            .eq("username", HIS_USERNAME)
+            .single();
+
+        const name = profile?.name || HIS_USERNAME;
+        const avatar = profile?.avatar || "user.png";
+
+        document.getElementById("hisavatar").src = avatar;
+        document.getElementById("hisname").textContent = name;
+        document.getElementById("hisavaed").src = avatar;
+        document.getElementById("hisnameed").textContent = name;
+        document.getElementById("hisusernameed").textContent = HIS_USERNAME;
+    }
+
+    function formatTime(isoString) {
+        if (!isoString) return "";
+        const date = new Date(isoString);
+        if (isNaN(date.getTime())) return "";
+        const h = date.getHours().toString().padStart(2, "0");
+        const m = date.getMinutes().toString().padStart(2, "0");
+        return `${h}:${m}`;
+    }
+
+    const STICKERS = {
+        ":stick1:": "sticker.png",
+        ":stick2:": "sticker2.png",
+        ":stick3:": "sticker3.png"
+    };
+
+    function renderReactions(reactions) {
+        if (!reactions || Object.keys(reactions).length === 0) return "";
+        return `<div class="reactions-list">${
+            Object.entries(reactions).map(([emoji, users]) =>
+                users.length > 0 ? `<span class="reaction">${emoji}</span>` : ""
+            ).join("")
+        }</div>`;
+    }
+
+    function renderMessage(msg) {
+        const isMine = msg.sender_username === MY_USERNAME;
+        const div = document.createElement("div");
+        div.className = isMine ? "yourmsg" : "hismsg";
+        div.dataset.id = msg.id;
+        div.dataset.mine = isMine ? "1" : "0";
+
+        const time = formatTime(msg.created_at);
+        const reactions = typeof msg.reactions === "string" ? JSON.parse(msg.reactions || "{}") : (msg.reactions || {});
+        const answerHtml = msg.answer ? `<div class="answer">↪ ${msg.answer}</div>` : `<div class="answer" style="display:none;"></div>`;
+
+        if (STICKERS[msg.text] && !msg.img) {
+            div.style.background = "none";
+            div.style.boxShadow = "none";
+            div.style.padding = "0";
+            div.style.borderRadius = "0";
+            div.innerHTML = `${answerHtml}<img style="background:none;width:50%;" src="${STICKERS[msg.text]}" alt="стикер">${renderReactions(reactions)}<span class="time">${time}</span>`;
+        } else {
+            let inner = answerHtml;
+            if (msg.img) inner += `<img src="${msg.img}" alt="фото">`;
+            if (msg.text) inner += `<span>${msg.text}</span>`;
+            inner += renderReactions(reactions);
+            inner += `<span class="time">${time}</span>`;
+            div.innerHTML = inner;
+        }
+
+        div.addEventListener("click", (e) => {
+            e.stopPropagation();
+            showPanels(div, msg.id, isMine);
+        });
+
+        return div;
+    }
+
+    // Обновить сообщение в DOM
+    function updateMessageInDOM(msg) {
+        const existing = document.querySelector(`[data-id="${msg.id}"]`);
+        if (existing) {
+            const isMine = existing.dataset.mine === "1";
+            const newEl = renderMessage(msg);
+            existing.replaceWith(newEl);
+        }
+    }
+
+    // Реакции
+    async function handleReaction(emoji) {
+        if (!activeMsgId) return;
+
+        const { data: msg } = await db.from("messages").select("reactions").eq("id", activeMsgId).single();
+        let reactions = typeof msg.reactions === "string" ? JSON.parse(msg.reactions || "{}") : (msg.reactions || {});
+
+        if (!reactions[emoji]) reactions[emoji] = [];
+
+        // Уже поставил — убираем, иначе добавляем
+        const idx = reactions[emoji].indexOf(MY_USERNAME);
+        if (idx !== -1) {
+            reactions[emoji].splice(idx, 1);
+        } else {
+            // Проверяем что этот emoji ещё не стоит от этого юзера
+            reactions[emoji].push(MY_USERNAME);
+        }
+
+        await db.from("messages").update({ reactions }).eq("id", activeMsgId);
+        hidePanels();
+    }
+
+    // Действия
+    let editingMsgId = null;
+    let replyingToText = null;
+
+    async function handleAction(action) {
+        if (!activeMsgId) return;
+
+        if (action === "copy") {
+            const el = document.querySelector(`[data-id="${activeMsgId}"] span:not(.time):not(.reaction)`);
+            if (el) navigator.clipboard.writeText(el.textContent);
+            hidePanels();
+
+        } else if (action === "delete") {
+            await db.from("messages").delete().eq("id", activeMsgId);
+            const el = document.querySelector(`[data-id="${activeMsgId}"]`);
+            if (el) el.remove();
+            hidePanels();
+
+        } else if (action === "edit") {
+            const el = document.querySelector(`[data-id="${activeMsgId}"] span:not(.time):not(.reaction)`);
+            if (!el) return;
+            editingMsgId = activeMsgId;
+            document.getElementById("msgtext").value = el.textContent;
+            document.getElementById("msgtext").focus();
+            hidePanels();
+
+        } else if (action === "answer") {
+            const el = document.querySelector(`[data-id="${activeMsgId}"] span:not(.time):not(.reaction)`);
+            const fullText = el ? el.textContent : "📷 Фото";
+            replyingToText = fullText.length > 30 ? fullText.slice(0, 30) + "..." : fullText;
+
+            document.getElementById("answerpreview").textContent = replyingToText;
+            document.getElementById("asnwerpreviewblock").style.bottom = "65px";
+            document.getElementById("msgtext").focus();
+            hidePanels();
+        }
+    }
+
+    // Отправка/сохранение изменения
+    async function sendMessage(text, img = null) {
+        if (!text && !img) return;
+
+        if (editingMsgId) {
+            await db.from("messages").update({ text }).eq("id", editingMsgId);
+            editingMsgId = null;
+            document.getElementById("msgtext").value = "";
+            return;
+        }
+
+        await db.from("messages").insert({
+            sender_username: MY_USERNAME,
+            recipient_username: HIS_USERNAME,
+            text: text || "",
+            img: img || "",
+            conversation_id_dialog: CHAT_ID,
+            answer: replyingToText || ""
+        });
+
+        // Скрываем превью ответа
+        replyingToText = null;
+        document.getElementById("asnwerpreviewblock").style.bottom = "-155px";
+        document.getElementById("answerpreview").textContent = "";
+
+        document.getElementById("imgpreviewblock").style.bottom = "-70px";
+        document.getElementById("stickerspreviewblock").style.bottom = "-155px";
+        isshowstickers = false;
+        selectedImageBase64 = null;
+        document.getElementById("imageInput").value = "";
+        document.getElementById("msgtext").value = "";
+    }
+
+    // Загрузка сообщений real-time
+    async function loadmessages() {
+        const container = document.getElementById("1m");
+
+        const { data: messages } = await db
+            .from("messages")
+            .select("*")
+            .eq("conversation_id_dialog", CHAT_ID)
+            .order("created_at", { ascending: true });
+
+        container.innerHTML = "";
+        const seen = new Set();
+        messages?.forEach(msg => {
+            if (seen.has(msg.id)) return;
+            seen.add(msg.id);
+            container.appendChild(renderMessage(msg));
+        });
+        container.scrollTop = container.scrollHeight;
+
+        db.channel("messages-" + CHAT_ID)
+            .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages" }, (payload) => {
+                const msg = payload.new;
+                if (msg.conversation_id_dialog !== CHAT_ID) return;
+                if (seen.has(msg.id)) return;
+                seen.add(msg.id);
+                container.appendChild(renderMessage(msg));
+                container.scrollTop = container.scrollHeight;
+            })
+            .on("postgres_changes", { event: "UPDATE", schema: "public", table: "messages" }, (payload) => {
+                const msg = payload.new;
+                if (msg.conversation_id_dialog !== CHAT_ID) return;
+                updateMessageInDOM(msg);
+            })
+            .on("postgres_changes", { event: "DELETE", schema: "public", table: "messages" }, (payload) => {
+                const el = container.querySelector(`[data-id="${payload.old.id}"]`);
+                if (el) el.remove();
+            })
+            .subscribe();
+    }
+
+    document.getElementById("imageInput").addEventListener("change", async function () {
+        if (this.files.length > 0) {
+            const file = this.files[0];
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = new Image();
+                img.onload = function () {
+                    const canvas = document.createElement("canvas");
+                    const maxSize = 800;
+                    let w = img.width, h = img.height;
+                    if (w > maxSize || h > maxSize) {
+                        if (w > h) { h = Math.round(h * maxSize / w); w = maxSize; }
+                        else { w = Math.round(w * maxSize / h); h = maxSize; }
+                    }
+                    canvas.width = w; canvas.height = h;
+                    canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+                    selectedImageBase64 = canvas.toDataURL("image/jpeg", 0.7);
+                    document.getElementById("imgpreview").src = selectedImageBase64;
+                    document.getElementById("imgpreviewblock").style.bottom = "65px";
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    document.getElementById("sendbutton").addEventListener("click", async () => {
+        const text = document.getElementById("msgtext").value.trim();
+        const img = selectedImageBase64;
+        if (!text && !img) return;
+        await sendMessage(text, img);
+    });
+
+    document.getElementById("msgtext").addEventListener("keydown", async (e) => {
+        if (e.key === "Enter") {
+            const text = document.getElementById("msgtext").value.trim();
+            const img = selectedImageBase64;
+            if (!text && !img) return;
+            await sendMessage(text, img);
+        }
+    });
+
+    function sendsticker(stickerid) {
+        sendMessage(stickerid, null);
+        showstickers();
+    }
+
+    async function deletechat() {
+        if (!confirm("Удалить чат? Это необратимо!")) return;
+        await db.from("messages").delete().eq("conversation_id_dialog", CHAT_ID);
+        await db.from("conversations").delete().eq("id", CHAT_ID);
+        window.location.href = "main.html";
+    }
+
+    let isshowstickers = false;
+    function showstickers() {
+        isshowstickers = !isshowstickers;
+        document.getElementById("stickerspreviewblock").style.bottom = isshowstickers ? "65px" : "-155px";
+    }
+
+    function checksend() {
+        const hasText = document.getElementById("msgtext").value.length > 0;
+        const hasImg = selectedImageBase64 !== null;
+        if (hasText || hasImg) {
+            document.getElementById("sendbutton").style.height = "100%";
+            document.getElementById("sendbutton").style.marginLeft = "0px";
+        } else {
+            document.getElementById("sendbutton").style.height = "0px";
+            document.getElementById("sendbutton").style.marginLeft = "-10px";
+        }
+    }
+    setInterval(checksend, 50);
+
+    loadChatInfo();
+    loadmessages();
+</script>
+</body>
+</html>

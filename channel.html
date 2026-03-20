@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>путь</title>
+    <link rel="shortcut icon" href="logo.svg" type="image/x-icon">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+<style>
+        body {
+            background: var(--bcg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        * {
+            scrollbar-width: none;
+            -ms-overflow-style: none; 
+            outline: none;
+            }
+            *::-webkit-scrollbar {
+                display: none;
+            }
+
+        button {
+            img { filter: var(--invert); opacity: 0.3; }
+            &.active { 
+                & img { opacity: 1; } 
+            }
+        }
+        label {
+            img { filter: var(--invert); opacity: 0.3; }
+            &.active { 
+                & img { opacity: 1; } 
+            }
+        }
+
+        header {
+            width: 100%;
+            height: 50px;
+            background: var(--el);
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 0 15px 0 15px;
+            box-sizing: border-box;
+            gap: 15px;
+
+            & button {
+                background: none;
+                border: 0;
+                border-radius: 0;
+                height: 100%;
+                & img { height: 40%; }
+            }
+
+            & .user {
+                display: flex;
+                align-items: center;
+                height: 100%;
+                gap: 5px;
+
+                & img {
+                    height: 60%;
+                    border-radius: 30%;
+                    aspect-ratio: 1 /  1;
+                }
+            }
+        }
+
+        footer {
+            width: 100%;
+            background: var(--el);
+            height: 65px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            box-sizing: border-box;
+            padding: 12px;
+            gap: 10px;
+            z-index: 9999;
+
+            & button img, label img { opacity: 0.5; }
+
+            & .other {
+                height: 100%;
+                background: none;
+                border: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                & img { height: 70%; }
+            }
+
+            & input {
+                flex: 1;
+                height: 40px;
+                background: var(--bcg);
+                border-radius: 10px;
+                border: 0;
+                box-sizing: border-box;
+                padding: 0px 10px;
+                color: var(--text);
+            }
+
+            & .send {
+                height: 100%;
+                aspect-ratio: 1 / 1;
+                border-radius: 50%;
+                border: 0;
+                background: var(--accent);
+                display: flex; align-items: center; justify-content: center;
+                & img { height: 50%; opacity: 1; filter: invert(1); }
+            }
+        }
+
+        main {
+            flex: 1;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            
+            & .mainblock {
+                width: 100%;
+                height: 100%;
+                display: none;
+                padding: 10px 15px;
+                overflow-y: auto;
+
+                &.active { display: flex; }
+            }
+
+            & .chat {
+                flex-direction: column;
+                align-items: center;
+                justify-content: flex-start;
+                gap: 15px;
+                background: var(--chatbcg);
+
+                & .yourmsg {
+                    margin-left: auto;
+                    box-sizing: border-box;
+                    padding: 10px;
+                    background: var(--yourmsg);
+                    border-radius: 20px 20px 5px 20px;
+                    display: flex;
+                    flex-direction: column;
+                    flex-shrink: 0;
+                    text-wrap: auto;
+                    gap: 10px;
+                    word-break: break-word;
+                    overflow-wrap: break-word;
+                    max-width: 70%;
+
+                    & img {
+                        width: 100%;
+                        background: var(--el);
+                        border-radius: 10px;
+                        margin-left: auto;
+                    }
+
+                    & .time {
+                        font-size: 12px;
+                        margin-top: -7px;
+                        margin-left: auto;
+                        opacity: 0.5;
+                    }
+                }
+                & .hismsg {
+                    margin-right: auto;
+                    box-sizing: border-box;
+                    padding: 10px;
+                    background: var(--hismsg);
+                    border-radius: 20px 20px 20px 5px;
+                    display: flex;
+                    flex-direction: column;
+                    flex-shrink: 0;
+                    text-wrap: auto;
+                    gap: 10px;
+                    word-break: break-word;
+                    overflow-wrap: break-word;
+                    max-width: 70%;
+
+                    & img {
+                        width: 100%;
+                        background: var(--el);
+                        border-radius: 10px;
+                        margin-right: auto;
+                    }
+
+                    & .time {
+                        font-size: 12px;
+                        margin-top: -7px;
+                        margin-right: auto;
+                        opacity: 0.5;
+                    }
+                }
+            }
+        } 
+        
+        .imgpreview {
+            position: fixed;
+            bottom: 65px;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px 10px 0 10px;
+            background: var(--el);
+            border-radius: 25px 25px 0 0;
+            display: flex;
+            justify-content: flex-start;
+
+            & img { height: 60px; border-radius: 15px; background: var(--bcg); }
+        }
+
+        .stickerpreview {
+            position: fixed;
+            bottom: 65px;
+            width: 100%;
+            height: 150px;
+            box-sizing: border-box;
+            padding: 10px 10px 0 10px;
+            background: var(--el);
+            border-radius: 25px 25px 0 0;
+            display: flex;
+            justify-content: flex-start;
+            gap: 10px;
+            flex-wrap: wrap;
+            overflow-y: auto;
+            align-items: flex-start;
+
+            & img { width: calc(25% - 8px);}
+        }
+
+        .answerpreview {
+            position: fixed;
+            bottom: 65px;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px;
+            background: var(--el);
+            border-radius: 25px 25px 0 0;
+            display: flex;
+            justify-content: flex-start;
+            color: var(--text);
+
+            & span { margin: 13px; }
+        }
+
+        .about_user {
+            justify-content: flex-start;
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 10px ;
+            & .usersethero {
+                width: 100%;
+                border-radius: 10px;
+                background: radial-gradient(#6a9eff, #4183FF);
+                box-sizing: border-box;
+                padding: 20px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+
+                & img { width: 30%; border-radius: 50%; }
+                & h1 { font-weight: 500; }
+            }
+
+            & .buttonst {
+                width: 100%;
+                background: var(--el);
+                border-radius: 10px;
+
+                & hr { border: 1px solid var(--hr); }
+
+                & button {
+                    display: flex;
+                    align-items: center; justify-content: center;
+                    background: none;
+                    border: 0;
+                    border-radius: 10px;
+                    color: var(--text);
+                    width: 100%;
+                    height: 40px;
+                }
+            }
+
+            & .back {
+                display: flex;
+                width: 100%;
+                align-items: center;
+                gap: 10px;
+                justify-content: flex-start;
+
+                & button {
+                    background: none;
+                    border: 0;
+                    height: 100%;
+                    display: flex;
+                    align-items: center;
+                    & img { height: 50%; }
+                }
+
+                & h1 {
+                    font-size: 25px;
+                    font-weight: 400;
+                }
+            }
+        }
+
+        .message-actions {
+            position: absolute;
+            background: var(--panel);
+            backdrop-filter: blur(5px);
+            border-radius: 8px;
+            color: var(--text);
+            padding: 10px;
+            gap: 15px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            width: 120px;
+            font-size: 12px;
+        }
+
+        .message-actions i {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .Reactions {
+            position: absolute;
+            display: flex;
+            z-index: 10001;
+            background: var(--panel);
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        .Reactions button {
+            border: none;
+            border-radius: 50%;
+            background: 0;
+            width: 30px;
+            height: 32px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .reaction {
+            padding: 5px 10px;
+            background: var(--reaction);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: left;
+            font-weight: 300; gap: 5px;
+        }
+
+        .reactions-list {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: -5px;
+            gap: 5px;
+        }
+
+        .yourmsg .reactions-list {
+            justify-content: flex-end;
+        }
+
+        .hismsg .reactions-list {
+            justify-content: flex-start;
+        }
+
+        .answer {
+            flex: 1;
+            background: var(--reaction);
+            border-radius: 10px;
+            box-sizing: border-box;
+            padding: 10px;
+        }
+
+        #subbutton {
+            width: 100%;
+            height: 100%;
+            background: var(--bcg);
+            border: 0;
+            border-radius: 10px;
+        }
+    </style>
+<body data-theme="dark">
+    <header id="header">
+        <button onclick="window.location.href = 'main.html'" class="active"><img src="back.svg" alt="назад"></button>
+        <div onclick="setmain(2)" class="user">
+            <img src="channel.png" alt="user">
+            <p id="channelname">NameofChannel</p>
+        </div>
+    </header>
+    <main>
+        <div id="1m" class="mainblock chat active" id="chats">
+            <!--<div class="yourmsg">
+                <div class="answer"></div>
+                <span>Текст сообщение</span>
+                <div class="reactions-list"></div>
+                <span class="time">00:00</span>
+            </div>
+            <div class="hismsg">
+                <div class="answer"></div>
+                <span>Текст сообщение</span>
+                <div class="reactions-list"></div>
+                <span class="time">00:00</span>
+            </div>
+            
+            пример с изображением
+            <div class="yourmsg">
+                <div class="answer"></div>
+                <img src="file.svg" alt="file">
+                <span>Текст сообщение</span>
+                <div class="reactions-list"></div>
+                <span class="time">00:00</span>
+            </div>
+            <div class="hismsg">
+                <div class="answer"></div>
+                <img src="file.svg" alt="file">
+                <span>Текст сообщение</span>
+                <div class="reactions-list"></div>
+                <span class="time">00:00</span>
+            </div>
+            
+            пример с реакцией
+            <div class="yourmsg">
+                <div class="answer"></div>
+                <span>Текст сообщение</span>
+                <div class="reactions-list">
+                    <span class="reaction" style="margin-top: 5px; margin-right: 5px;">❤</span>
+                </div>
+                <span class="time">00:00</span>
+            </div>
+            <div class="hismsg">
+                <div class="answer"></div>
+                <span>Текст сообщение</span>
+                <div class="reactions-list">
+                    <span class="reaction" style="margin-top: 5px; margin-right: 5px;">😇</span>
+                </div>
+                <span class="time">00:00</span>
+            </div>
+
+            пример с ответом
+            <div class="yourmsg">
+                <div class="answer">↪ Текст сообщения собеседника...</div>
+                <span>Текст сообщение</span>
+                <div class="reactions-list"></div>
+                <span class="time">00:00</span>
+            </div>
+            <div class="hismsg">
+                <div class="answer">↪ Текст сообщения собеседника...</div>
+                <span>Текст сообщение</span>
+                <div class="reactions-list"></div>
+                <span class="time">00:00</span>
+            </div>
+        -->
+            
+        </div>
+        <div id="2m" class="mainblock about_user">
+            <div class="back">
+                <button onclick="setmain(1)" class="active"><img src="back.svg" alt="back"></button>
+                <h1>Назад</h1>
+            </div>
+            <div class="usersethero">
+                <img src="channel.png" alt="user">
+                <h1 id="channelnameed">Channel</h1>
+            </div>
+            <div style="padding: 20px;" class="buttonst">
+                <p>Публичный канал</p>
+            </div>
+        </div>
+    </main>
+    <footer id="footer">
+        <button onclick="showstickers()" class="other"><img src="stickers.svg" alt="стикеры"></button>
+        <label for="imageInput" class="other"><img src="file.svg" alt="файл"></label>
+        <input type="file" accept=".jpg,.jpeg,.png,.gif" id="imageInput" style="display:none;">
+        <input type="text" placeholder="написать пост..." id="msgtext">
+        <button id="sendbutton" class="send"><img src="send.svg" alt="send"></button>
+    </footer>
+    <footer id="subfooter" style="display:none;">
+        <button id="subbutton" onclick="toggleSubscribe()">Подписаться</button>
+    </footer>
+    <div id="imgpreviewblock" style="bottom: -70px;" class="imgpreview">
+        <img id="imgpreview" src="file.svg" alt="file">
+    </div>
+    <div id="stickerspreviewblock" style="bottom: -155px;" class="stickerpreview">
+        <img onclick="sendsticker(':stick1:')" src="sticker.png" alt="file">
+        <img onclick="sendsticker(':stick2:')" src="sticker2.png" alt="file">
+        <img onclick="sendsticker(':stick3:')" src="sticker3.png" alt="file">
+    </div>
+
+    <div class="Reactions" style="position:fixed;">
+        <button onclick="handleReaction('❤️')">❤️</button>
+        <button onclick="handleReaction('😇')">😇</button>
+        <button onclick="handleReaction('🥰')">🥰</button>
+        <button onclick="handleReaction('😮')">😮</button>
+        <button onclick="handleReaction('😭')">😭</button>
+        <button onclick="handleReaction('😨')">😨</button>
+    </div>
+    <div class="message-actions" style="position:fixed;">
+        <i data-action="copy" onclick="handleAction('copy')"><span>Копировать</span></i>
+    </div>
+
+<script>
+    const SUPABASE_URL = "https://xcowyhnhdpqhegthjmsa.supabase.co";
+    const SUPABASE_KEY = atob("ZXlKaGJHY2lPaUpJVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SnBjM01pT2lKemRYQmhZbUZ6WlNJc0luSmxaaUk2SW5oamIzZDVhRzVvWkhCeGFHVm5kR2hxYlhOaElpd2ljbTlzWlNJNkltRnViMjRpTENKcFlYUWlPakUzTnpNM016WTRPVGtzSW1WNGNDSTZNakE0T1RNeE1qZzVPWDAuV1g3dDZ2cG1yYmhfaFJiME90UWdpa09UUnRNbmZ6anFQUHloWHNaSmhPQQ==");
+    const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const MY_USERNAME = localStorage.getItem("putusername");
+    const MY_NAME = localStorage.getItem("putname");
+    if (!MY_USERNAME || !MY_NAME) window.location.href = "index.html";
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const CHANNEL_ID = urlParams.get("channelid");
+    if (!CHANNEL_ID) window.location.href = "main.html";
+
+    let CHANNEL_NAME = "";
+    let IS_OWNER = false;
+    let selectedImageBase64 = null;
+    let activeMsgId = null;
+
+    const reactionsPanel = document.querySelector(".Reactions");
+    const actionsPanel = document.querySelector(".message-actions");
+    reactionsPanel.style.display = "none";
+    actionsPanel.style.display = "none";
+
+    let current_main_screen = 1;
+    function setmain(scrr) {
+        current_main_screen = scrr;
+        for (let i = 1; i < 3; i++) document.getElementById(i + "m").classList.remove("active");
+        document.getElementById(scrr + "m").classList.add("active");
+        if (scrr == 1) {
+            document.getElementById("header").style.display = "flex";
+            document.getElementById("footer").style.display = "flex";
+        } else {
+            document.getElementById("header").style.display = "none";
+            document.getElementById("footer").style.display = "none";
+        }
+        hidePanels();
+    }
+
+    if (!localStorage.getItem("putheme")) localStorage.setItem("putheme", "dark");
+    document.body.setAttribute('data-theme', localStorage.getItem("putheme"));
+
+    function hidePanels() {
+        reactionsPanel.style.display = "none";
+        actionsPanel.style.display = "none";
+        activeMsgId = null;
+    }
+
+    document.addEventListener("click", (e) => {
+        if (!reactionsPanel.contains(e.target) && !actionsPanel.contains(e.target) && !e.target.closest(".hismsg")) {
+            hidePanels();
+        }
+    });
+
+    // Загрузка информации о канале
+    async function loadChannelInfo() {
+        const { data: channel } = await db
+            .from("channels")
+            .select("namechannel, creator")
+            .eq("id", CHANNEL_ID)
+            .single();
+
+        if (!channel) { window.location.href = "main.html"; return; }
+
+        CHANNEL_NAME = channel.namechannel;
+        IS_OWNER = channel.creator === MY_USERNAME;
+
+        document.getElementById("channelname").textContent = CHANNEL_NAME;
+        document.getElementById("channelnameed").textContent = CHANNEL_NAME;
+
+        // Показываем нужный footer
+        if (IS_OWNER) {
+            document.getElementById("footer").style.display = "flex";
+            document.getElementById("subfooter").style.display = "none";
+        } else {
+            document.getElementById("footer").style.display = "none";
+            document.getElementById("subfooter").style.display = "flex";
+            updateSubButton();
+        }
+    }
+
+    // Подписка/отписка
+    function isSubscribed() {
+        const ids = JSON.parse(localStorage.getItem("putchannels") || "[]");
+        return ids.includes(Number(CHANNEL_ID)) || ids.includes(CHANNEL_ID);
+    }
+
+    function updateSubButton() {
+        const btn = document.getElementById("subbutton");
+        if (btn) btn.textContent = isSubscribed() ? "Отписаться" : "Подписаться";
+    }
+
+    function toggleSubscribe() {
+        let ids = JSON.parse(localStorage.getItem("putchannels") || "[]");
+        const id = Number(CHANNEL_ID) || CHANNEL_ID;
+        if (isSubscribed()) {
+            ids = ids.filter(i => i != CHANNEL_ID && i != Number(CHANNEL_ID));
+        } else {
+            ids.push(id);
+        }
+        localStorage.setItem("putchannels", JSON.stringify(ids));
+        updateSubButton();
+    }
+
+    function formatTime(isoString) {
+        if (!isoString) return "";
+        const date = new Date(isoString);
+        if (isNaN(date.getTime())) return "";
+        const h = date.getHours().toString().padStart(2, "0");
+        const m = date.getMinutes().toString().padStart(2, "0");
+        return `${h}:${m}`;
+    }
+
+    const STICKERS = {
+        ":stick1:": "sticker.png",
+        ":stick2:": "sticker2.png",
+        ":stick3:": "sticker3.png"
+    };
+
+    function renderReactions(reactions) {
+        if (!reactions || Object.keys(reactions).length === 0) return "";
+        const items = Object.entries(reactions)
+            .filter(([, users]) => users.length > 0)
+            .map(([emoji, users]) => {
+                const count = users.length;
+                return `<span class="reaction">${count > 1 ? `<b>${count}</b>` : ""}${emoji}</span>`;
+            }).join("");
+        return items ? `<div class="reactions-list">${items}</div>` : "";
+    }
+
+    function renderPost(post) {
+        const div = document.createElement("div");
+        div.className = "hismsg";
+        div.dataset.id = post.id;
+
+        const time = formatTime(post.created_at);
+        const reactions = typeof post.reactions === "string" ? JSON.parse(post.reactions || "{}") : (post.reactions || {});
+
+        if (STICKERS[post.textofpost] && !post.img) {
+            div.style.background = "none";
+            div.style.boxShadow = "none";
+            div.style.padding = "0";
+            div.style.borderRadius = "0";
+            div.innerHTML = `<img style="background:none;width:50%;" src="${STICKERS[post.textofpost]}" alt="стикер">${renderReactions(reactions)}<span class="time">${time}</span>`;
+        } else {
+            let inner = "";
+            if (post.img) inner += `<img src="${post.img}" alt="фото">`;
+            if (post.textofpost) inner += `<span>${post.textofpost}</span>`;
+            inner += renderReactions(reactions);
+            inner += `<span class="time">${time}</span>`;
+            div.innerHTML = inner;
+        }
+
+        div.addEventListener("click", (e) => {
+            e.stopPropagation();
+            showPanels(div, post.id);
+        });
+
+        return div;
+    }
+
+    function updatePostInDOM(post) {
+        const existing = document.querySelector(`[data-id="${post.id}"]`);
+        if (existing) existing.replaceWith(renderPost(post));
+    }
+
+    function showPanels(msgEl, postId) {
+        if (activeMsgId === postId) { hidePanels(); return; }
+        activeMsgId = postId;
+
+        const rect = msgEl.getBoundingClientRect();
+        const scrollY = window.scrollY || document.documentElement.scrollTop;
+
+        reactionsPanel.style.display = "flex";
+        reactionsPanel.style.top = (rect.top + scrollY - 45) + "px";
+        reactionsPanel.style.left = rect.left + "px";
+        reactionsPanel.style.right = "auto";
+
+        actionsPanel.style.display = "flex";
+        actionsPanel.style.top = (rect.top + scrollY - 45 + 40) + "px";
+        actionsPanel.style.left = rect.left + "px";
+        actionsPanel.style.right = "auto";
+    }
+
+    async function handleReaction(emoji) {
+        if (!activeMsgId) return;
+
+        const { data: post } = await db.from("postsChannel").select("reactions").eq("id", activeMsgId).single();
+        let reactions = typeof post.reactions === "string" ? JSON.parse(post.reactions || "{}") : (post.reactions || {});
+
+        if (!reactions[emoji]) reactions[emoji] = [];
+        const idx = reactions[emoji].indexOf(MY_USERNAME);
+        if (idx !== -1) {
+            reactions[emoji].splice(idx, 1);
+        } else {
+            reactions[emoji].push(MY_USERNAME);
+        }
+
+        await db.from("postsChannel").update({ reactions }).eq("id", activeMsgId);
+        hidePanels();
+    }
+
+    async function handleAction(action) {
+        if (!activeMsgId) return;
+        if (action === "copy") {
+            const el = document.querySelector(`[data-id="${activeMsgId}"] span:not(.time):not(.reaction)`);
+            if (el) navigator.clipboard.writeText(el.textContent);
+            hidePanels();
+        }
+    }
+
+    // Загрузка постов real-time
+    async function loadPosts() {
+        const container = document.getElementById("1m");
+
+        const { data: posts } = await db
+            .from("postsChannel")
+            .select("*")
+            .eq("channelname", CHANNEL_NAME)
+            .order("created_at", { ascending: true });
+
+        container.innerHTML = "";
+        const seen = new Set();
+        posts?.forEach(post => {
+            if (seen.has(post.id)) return;
+            seen.add(post.id);
+            container.appendChild(renderPost(post));
+        });
+        container.scrollTop = container.scrollHeight;
+
+        db.channel("posts-" + CHANNEL_ID)
+            .on("postgres_changes", { event: "INSERT", schema: "public", table: "postsChannel" }, (payload) => {
+                const post = payload.new;
+                if (post.channelname !== CHANNEL_NAME) return;
+                if (seen.has(post.id)) return;
+                seen.add(post.id);
+                container.appendChild(renderPost(post));
+                container.scrollTop = container.scrollHeight;
+            })
+            .on("postgres_changes", { event: "UPDATE", schema: "public", table: "postsChannel" }, (payload) => {
+                const post = payload.new;
+                if (post.channelname !== CHANNEL_NAME) return;
+                updatePostInDOM(post);
+            })
+            .on("postgres_changes", { event: "DELETE", schema: "public", table: "postsChannel" }, (payload) => {
+                const el = container.querySelector(`[data-id="${payload.old.id}"]`);
+                if (el) el.remove();
+            })
+            .subscribe();
+    }
+
+    // Отправка поста
+    async function sendPost(text, img = null) {
+        if (!text && !img) return;
+
+        await db.from("postsChannel").insert({
+            textofpost: text || "",
+            img: img || "",
+            channelname: CHANNEL_NAME,
+            reactions: {}
+        });
+
+        document.getElementById("imgpreviewblock").style.bottom = "-70px";
+        document.getElementById("stickerspreviewblock").style.bottom = "-155px";
+        isshowstickers = false;
+        selectedImageBase64 = null;
+        document.getElementById("imageInput").value = "";
+        document.getElementById("msgtext").value = "";
+    }
+
+    document.getElementById("imageInput").addEventListener("change", async function () {
+        if (this.files.length > 0) {
+            const file = this.files[0];
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = new Image();
+                img.onload = function () {
+                    const canvas = document.createElement("canvas");
+                    const maxSize = 800;
+                    let w = img.width, h = img.height;
+                    if (w > maxSize || h > maxSize) {
+                        if (w > h) { h = Math.round(h * maxSize / w); w = maxSize; }
+                        else { w = Math.round(w * maxSize / h); h = maxSize; }
+                    }
+                    canvas.width = w; canvas.height = h;
+                    canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+                    selectedImageBase64 = canvas.toDataURL("image/jpeg", 0.7);
+                    document.getElementById("imgpreview").src = selectedImageBase64;
+                    document.getElementById("imgpreviewblock").style.bottom = "65px";
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    document.getElementById("sendbutton").addEventListener("click", async () => {
+        const text = document.getElementById("msgtext").value.trim();
+        const img = selectedImageBase64;
+        if (!text && !img) return;
+        await sendPost(text, img);
+    });
+
+    document.getElementById("msgtext").addEventListener("keydown", async (e) => {
+        if (e.key === "Enter") {
+            const text = document.getElementById("msgtext").value.trim();
+            const img = selectedImageBase64;
+            if (!text && !img) return;
+            await sendPost(text, img);
+        }
+    });
+
+    let isshowstickers = false;
+    function showstickers() {
+        isshowstickers = !isshowstickers;
+        document.getElementById("stickerspreviewblock").style.bottom = isshowstickers ? "65px" : "-155px";
+    }
+
+    function sendsticker(stickerid) {
+        sendPost(stickerid, null);
+        showstickers();
+    }
+
+    function checksend() {
+        const hasText = document.getElementById("msgtext").value.length > 0;
+        const hasImg = selectedImageBase64 !== null;
+        if (hasText || hasImg) {
+            document.getElementById("sendbutton").style.height = "100%";
+            document.getElementById("sendbutton").style.marginLeft = "0px";
+        } else {
+            document.getElementById("sendbutton").style.height = "0px";
+            document.getElementById("sendbutton").style.marginLeft = "-10px";
+        }
+    }
+    setInterval(checksend, 50);
+
+    loadChannelInfo().then(() => loadPosts());
+</script>
+</body>
+</html>
