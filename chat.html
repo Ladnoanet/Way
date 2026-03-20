@@ -27,19 +27,24 @@
     display: none;
 }
 
-/* button / label */
-button img,
+button img {
+    filter: var(--invert);
+    opacity: 0.3;
+}
+
+button.active img {
+    opacity: 1;
+}
+
 label img {
     filter: var(--invert);
     opacity: 0.3;
 }
 
-button.active img,
 label.active img {
     opacity: 1;
 }
 
-/* header */
 header {
     width: 100%;
     height: 50px;
@@ -78,7 +83,6 @@ header .user img {
     aspect-ratio: 1 / 1;
 }
 
-/* footer */
 footer {
     width: 100%;
     background: var(--el);
@@ -130,11 +134,11 @@ footer .send {
     aspect-ratio: 1 / 1;
     border-radius: 50%;
     border: 0;
+    flex-shrink: 0;
     background: var(--accent);
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
 }
 
 footer .send img {
@@ -143,7 +147,6 @@ footer .send img {
     filter: invert(1);
 }
 
-/* main */
 main {
     flex: 1;
     width: 100%;
@@ -167,7 +170,6 @@ main .mainblock.active {
     display: flex;
 }
 
-/* chat */
 main .chat {
     flex-direction: column;
     align-items: center;
@@ -178,13 +180,17 @@ main .chat {
 
 main .chat .yourmsg {
     margin-left: auto;
+    box-sizing: border-box;
     padding: 10px;
     background: var(--yourmsg);
     border-radius: 20px 20px 5px 20px;
     display: flex;
     flex-direction: column;
+    flex-shrink: 0;
+    text-wrap: auto;
     gap: 10px;
     word-break: break-word;
+    overflow-wrap: break-word;
     max-width: 70%;
 }
 
@@ -192,6 +198,7 @@ main .chat .yourmsg img {
     width: 100%;
     background: var(--el);
     border-radius: 10px;
+    margin-left: auto;
 }
 
 main .chat .yourmsg .time {
@@ -203,13 +210,17 @@ main .chat .yourmsg .time {
 
 main .chat .hismsg {
     margin-right: auto;
+    box-sizing: border-box;
     padding: 10px;
     background: var(--hismsg);
     border-radius: 20px 20px 20px 5px;
     display: flex;
     flex-direction: column;
+    flex-shrink: 0;
+    text-wrap: auto;
     gap: 10px;
     word-break: break-word;
+    overflow-wrap: break-word;
     max-width: 70%;
 }
 
@@ -217,6 +228,7 @@ main .chat .hismsg img {
     width: 100%;
     background: var(--el);
     border-radius: 10px;
+    margin-right: auto;
 }
 
 main .chat .hismsg .time {
@@ -226,19 +238,16 @@ main .chat .hismsg .time {
     opacity: 0.5;
 }
 
-/* previews */
-.imgpreview,
-.stickerpreview,
-.answerpreview {
+.imgpreview {
     position: fixed;
     bottom: 65px;
     width: 100%;
     box-sizing: border-box;
-    padding: 10px;
+    padding: 10px 10px 0 10px;
     background: var(--el);
     border-radius: 25px 25px 0 0;
     display: flex;
-    align-items: flex-start;
+    justify-content: flex-start;
 }
 
 .imgpreview img {
@@ -248,11 +257,20 @@ main .chat .hismsg .time {
 }
 
 .stickerpreview {
+    position: fixed;
+    bottom: 65px;
+    width: 100%;
     height: 150px;
+    box-sizing: border-box;
+    padding: 10px 10px 0 10px;
+    background: var(--el);
+    border-radius: 25px 25px 0 0;
+    display: flex;
+    justify-content: flex-start;
     gap: 10px;
     flex-wrap: wrap;
     overflow-y: auto;
-    display: flex;
+    align-items: flex-start;
 }
 
 .stickerpreview img {
@@ -260,7 +278,15 @@ main .chat .hismsg .time {
 }
 
 .answerpreview {
+    position: fixed;
+    bottom: 65px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+    background: var(--el);
+    border-radius: 25px 25px 0 0;
     display: flex;
+    justify-content: flex-start;
     color: var(--text);
 }
 
@@ -268,9 +294,9 @@ main .chat .hismsg .time {
     margin: 13px;
 }
 
-/* about user */
 .about_user {
-    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
     flex-direction: column;
     gap: 10px;
 }
@@ -279,15 +305,21 @@ main .chat .hismsg .time {
     width: 100%;
     border-radius: 10px;
     background: radial-gradient(#6a9eff, #4183FF);
+    box-sizing: border-box;
     padding: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    text-align: center;
 }
 
 .about_user .usersethero img {
     width: 30%;
     border-radius: 50%;
+}
+
+.about_user .usersethero h1 {
+    font-weight: 500;
 }
 
 .about_user .buttonst {
@@ -296,49 +328,81 @@ main .chat .hismsg .time {
     border-radius: 10px;
 }
 
+.about_user .buttonst hr {
+    border: 1px solid var(--hr);
+}
+
 .about_user .buttonst button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: 0;
+    border-radius: 10px;
+    color: var(--text);
     width: 100%;
     height: 40px;
-    border: none;
-    background: none;
 }
 
 .about_user .back {
     display: flex;
+    width: 100%;
+    align-items: center;
     gap: 10px;
+    justify-content: flex-start;
 }
 
-/* message actions */
+.about_user .back button {
+    background: none;
+    border: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.about_user .back button img {
+    height: 50%;
+}
+
+.about_user .back h1 {
+    font-size: 25px;
+    font-weight: 400;
+}
+
 .message-actions {
     position: absolute;
     background: var(--panel);
     backdrop-filter: blur(5px);
     border-radius: 8px;
+    color: var(--text);
     padding: 10px;
+    gap: 15px;
+    z-index: 10000;
     display: flex;
     flex-direction: column;
     width: 120px;
     font-size: 12px;
-    gap: 10px;
 }
 
 .message-actions i {
     display: flex;
+    align-items: center;
     gap: 10px;
 }
 
-/* reactions */
 .Reactions {
     position: absolute;
     display: flex;
+    z-index: 10001;
     background: var(--panel);
     border-radius: 20px;
+    backdrop-filter: blur(5px);
 }
 
 .Reactions button {
     border: none;
     border-radius: 50%;
-    background: none;
+    background: 0;
     width: 30px;
     height: 32px;
     font-size: 16px;
@@ -351,11 +415,13 @@ main .chat .hismsg .time {
     border-radius: 20px;
     display: flex;
     align-items: center;
+    justify-content: left;
 }
 
 .reactions-list {
     display: flex;
     flex-wrap: wrap;
+    margin-top: -5px;
     gap: 5px;
 }
 
@@ -371,6 +437,7 @@ main .chat .hismsg .time {
     flex: 1;
     background: var(--reaction);
     border-radius: 10px;
+    box-sizing: border-box;
     padding: 10px;
 }
     </style>
