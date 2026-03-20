@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>путь</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="logo.svg" type="image/x-icon">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            background: var(--bcg);
+            padding: 20px;
+        }
+        img {
+            margin-bottom: 15px;
+            height: 50px;
+        }
+        h2 { font-weight: 500; }
+    </style>
+</head>
+<body data-theme="dark">
+    <img src="eror.png" alt="лого">
+    <h2>Чтото тут не так...</h2>
+    <script>
+    
+    if (!localStorage.getItem("putheme")) localStorage.setItem("putheme", "dark");
+    document.body.setAttribute('data-theme', localStorage.getItem("putheme")); 
+</script>
+</body>
+</html>
