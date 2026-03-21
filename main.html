@@ -986,7 +986,8 @@ main .policeoftemp .booleanblock .boolean div {
     loadchats();
     loadchannels();
 
-    if ("Notification" in window) {
+// Уведомления
+if ("Notification" in window) {
     Notification.requestPermission();
 }
 
@@ -996,12 +997,13 @@ db.channel("notifications")
         schema: "public",
         table: "messages"
     }, async (payload) => {
+        console.log("новое сообщение:", payload.new);
         const msg = payload.new;
-        if (msg.recipient_username !== MY_USERNAME) return;
-        if (document.visibilityState === "visible") return;
-        if (Notification.permission !== "granted") return;
+        if (!msg.recipient_username) { console.log("recipient_username пустой"); return; }
+        if (msg.recipient_username !== MY_USERNAME) { console.log("не наше сообщение"); return; }
+        if (document.visibilityState === "visible") { console.log("вкладка активна"); return; }
+        if (Notification.permission !== "granted") { console.log("нет разрешения"); return; }
 
-        // Получаем имя отправителя
         const { data: profile } = await db
             .from("profiles")
             .select("name")
@@ -1018,21 +1020,20 @@ db.channel("notifications")
     })
     .subscribe();
 
-    async function requestNotifications() {
-        const permission = await Notification.requestPermission();
-        if (permission === "granted") {
-            document.getElementById("notifbutton").textContent = "Уведомления включены ✓";
-            document.getElementById("notifbutton").classList.add("active");
-        } else {
-            document.getElementById("notifbutton").textContent = "Разрешение отклонено";
-        }
-    }
-
-    // Обновляем кнопку при загрузке
-    if (Notification.permission === "granted") {
+async function requestNotifications() {
+    const permission = await Notification.requestPermission();
+    if (permission === "granted") {
         document.getElementById("notifbutton").textContent = "Уведомления включены ✓";
         document.getElementById("notifbutton").classList.add("active");
+    } else {
+        document.getElementById("notifbutton").textContent = "Разрешение отклонено";
     }
+}
+
+if (Notification.permission === "granted") {
+    document.getElementById("notifbutton").textContent = "Уведомления включены ✓";
+    document.getElementById("notifbutton").classList.add("active");
+}
 </script>
 </body>
 </html>
