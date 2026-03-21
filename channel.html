@@ -373,15 +373,15 @@ main .chat .hismsg .time {
     position: absolute;
     background: var(--panel);
     backdrop-filter: blur(5px);
-    border-radius: 8px;
+    border-radius: 14px;
     color: var(--text);
-    padding: 10px;
-    gap: 15px;
+    padding: 12px;
+    gap: 18px;
     z-index: 10000;
     display: flex;
     flex-direction: column;
-    width: 120px;
-    font-size: 12px;
+    width: 150px;
+    font-size: 15px;
 }
 
 .message-actions i {
@@ -393,20 +393,26 @@ main .chat .hismsg .time {
 .Reactions {
     position: absolute;
     display: flex;
+    flex-wrap: wrap;
+    width: calc(44px * 4);
     z-index: 10001;
     background: var(--panel);
-    border-radius: 20px;
+    border-radius: 14px;
     backdrop-filter: blur(5px);
+    justify-content: flex-start;
+    align-items: flex-start;
 }
 
 .Reactions button {
+    flex: 0 0 44px;
     border: none;
     border-radius: 50%;
-    background: 0;
-    width: 30px;
-    height: 32px;
-    font-size: 16px;
+    width: 44px;
+    height: 44px;
+    font-size: 22px;
     cursor: pointer;
+    aspect-ratio: 1 / 1;
+    background: 0;
 }
 
 .reaction {
@@ -562,6 +568,8 @@ main .chat .hismsg .time {
         <button onclick="handleReaction('😮')">😮</button>
         <button onclick="handleReaction('😭')">😭</button>
         <button onclick="handleReaction('😨')">😨</button>
+        <button onclick="handleReaction('🤩')">🤩</button>
+        <button onclick="handleReaction('🤗')">🤗</button>
     </div>
     <div class="message-actions" style="position:fixed;">
         <i data-action="copy" onclick="handleAction('copy')"><span>Копировать</span></i>
@@ -745,7 +753,7 @@ main .chat .hismsg .time {
         reactionsPanel.style.right = "auto";
 
         actionsPanel.style.display = "flex";
-        actionsPanel.style.top = (rect.top + scrollY - 45 + 40) + "px";
+        actionsPanel.style.top = (rect.top + scrollY - 45 + 100) + "px";
         actionsPanel.style.left = rect.left + "px";
         actionsPanel.style.right = "auto";
     }
