@@ -593,7 +593,8 @@ main .policeoftemp .booleanblock .boolean div {
         </div>
         <div id="10m" class="mainblock notifications create">
             <img src="notifications.svg" alt="канал">
-            <h1 style="text-align: center;">Эта функция пока не реализована!</h1>
+            <h1 style="text-align: center;">Уведомления</h1>
+            <button id="notifbutton" onclick="requestNotifications()">Включить уведомления</button>
         </div>
         <div id="11m" class="mainblock policeoftemp">
             <img src="lock.png" alt="замок">
@@ -1016,6 +1017,22 @@ db.channel("notifications")
         });
     })
     .subscribe();
+
+    async function requestNotifications() {
+        const permission = await Notification.requestPermission();
+        if (permission === "granted") {
+            document.getElementById("notifbutton").textContent = "Уведомления включены ✓";
+            document.getElementById("notifbutton").classList.add("active");
+        } else {
+            document.getElementById("notifbutton").textContent = "Разрешение отклонено";
+        }
+    }
+
+    // Обновляем кнопку при загрузке
+    if (Notification.permission === "granted") {
+        document.getElementById("notifbutton").textContent = "Уведомления включены ✓";
+        document.getElementById("notifbutton").classList.add("active");
+    }
 </script>
 </body>
 </html>
