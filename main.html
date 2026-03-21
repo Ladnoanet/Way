@@ -8,7 +8,6 @@
     <link rel="shortcut icon" href="logo.svg" type="image/x-icon">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    </script>
     <style>
         body {
     background: var(--bcg);
@@ -985,6 +984,38 @@ main .policeoftemp .booleanblock .boolean div {
 
     loadchats();
     loadchannels();
+
+    if ("Notification" in window) {
+    Notification.requestPermission();
+}
+
+db.channel("notifications")
+    .on("postgres_changes", {
+        event: "INSERT",
+        schema: "public",
+        table: "messages"
+    }, async (payload) => {
+        const msg = payload.new;
+        if (msg.recipient_username !== MY_USERNAME) return;
+        if (document.visibilityState === "visible") return;
+        if (Notification.permission !== "granted") return;
+
+        // Получаем имя отправителя
+        const { data: profile } = await db
+            .from("profiles")
+            .select("name")
+            .eq("username", msg.sender_username)
+            .single();
+
+        const senderName = profile?.name || msg.sender_username;
+        const text = msg.text || "📷 Фото";
+
+        new Notification(senderName, {
+            body: text.length > 50 ? text.slice(0, 50) + "..." : text,
+            icon: "logo.svg"
+        });
+    })
+    .subscribe();
 </script>
 </body>
 </html>
