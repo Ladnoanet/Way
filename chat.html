@@ -191,7 +191,7 @@ main .chat .yourmsg {
     gap: 10px;
     word-break: break-word;
     overflow-wrap: break-word;
-    max-width: 70%;
+    max-width: 75%;
 }
 
 main .chat .yourmsg img {
@@ -221,7 +221,7 @@ main .chat .hismsg {
     gap: 10px;
     word-break: break-word;
     overflow-wrap: break-word;
-    max-width: 70%;
+    max-width: 75%;
 }
 
 main .chat .hismsg img {
@@ -394,7 +394,7 @@ main .chat .hismsg .time {
     position: absolute;
     display: flex;
     flex-wrap: wrap;
-    width: calc(44px * 4);
+    width: calc(44px * 5);
     z-index: 10001;
     background: var(--panel);
     border-radius: 14px;
@@ -445,6 +445,31 @@ main .chat .hismsg .time {
     border-radius: 10px;
     box-sizing: border-box;
     padding: 10px;
+}
+
+.all_reactions {
+    position: fixed;
+    z-index: 100;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--panel);
+    backdrop-filter: blur(10px);
+    width: 85%;
+    height: 200px;
+    border-radius: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    align-content: flex-start;
+    overflow-y: auto;
+}
+.all_reactions button {
+    flex: 0 0 calc(100% / 7);
+    aspect-ratio: 1 / 1;
+    background: 0;
+    border: 0;
+    font-size: 20px;
 }
     </style>
 <body data-theme="dark">
@@ -565,12 +590,42 @@ main .chat .hismsg .time {
         <button onclick="handleReaction('😨')">😨</button>
         <button onclick="handleReaction('🤩')">🤩</button>
         <button onclick="handleReaction('🤗')">🤗</button>
+        <button onclick="handleReaction('🤔')">🤔</button>
+        <button onclick="Openreactions(1)"><img style="width: 50%; opacity: 0.7;" src="reaction.svg" alt="reaction"></button>
     </div>
     <div class="message-actions" style="position:fixed;">
         <i data-action="delete" onclick="handleAction('delete')"><span>Удалить</span></i>
         <i data-action="copy" onclick="handleAction('copy')"><span>Копировать</span></i>
         <i data-action="edit" onclick="handleAction('edit')"><span>Изменить</span></i>
         <i data-action="answer" onclick="handleAction('answer')"><span>Ответить на</span></i>
+    </div>
+    <div style="display: none;" id="all_reactions" class="all_reactions">
+        <button onclick="Openreactions(0)"><img style="height: 40%; opacity: 1;" src="back.svg" alt="reaction"></button>
+        <button onclick="handleReaction('👍')">👍</button>
+        <button onclick="handleReaction('👎')">👎</button>
+        <button onclick="handleReaction('❤️')">❤️</button>
+        <button onclick="handleReaction('🔥')">🔥</button>
+        <button onclick="handleReaction('🥰')">🥰</button>
+        <button onclick="handleReaction('😭')">😭</button>
+        <button onclick="handleReaction('👏')">👏</button>
+        <button onclick="handleReaction('😁')">😁</button>
+        <button onclick="handleReaction('😨')">😨</button>
+        <button onclick="handleReaction('🤗')">🤗</button>
+        <button onclick="handleReaction('😇')">😇</button>
+        <button onclick="handleReaction('🤔')">🤔</button>
+        <button onclick="handleReaction('🤯')">🤯</button>
+        <button onclick="handleReaction('😱')">😱</button>
+        <button onclick="handleReaction('🤬')">🤬</button>
+        <button onclick="handleReaction('😮')">😮</button>
+        <button onclick="handleReaction('😢')">😢</button>
+        <button onclick="handleReaction('🎉')">🎉</button>
+        <button onclick="handleReaction('🤩')">🤩</button>
+        <button onclick="handleReaction('🤮')">🤮</button>
+        <button onclick="handleReaction('💩')">💩</button>
+        <button onclick="handleReaction('🙏')">🙏</button>
+        <button onclick="handleReaction('👌')">👌</button>
+        <button onclick="handleReaction('🕊️')">🕊️</button>
+        <button onclick="handleReaction('🤡')">🤡</button>
     </div>
 
 <script>
@@ -622,12 +677,24 @@ main .chat .hismsg .time {
     function hidePanels() {
         reactionsPanel.style.display = "none";
         actionsPanel.style.display = "none";
+        document.getElementById("all_reactions").style.display = "none";
         activeMsgId = null;
     }
 
     // Клик вне панелей — скрываем
     document.addEventListener("click", (e) => {
         if (!reactionsPanel.contains(e.target) && !actionsPanel.contains(e.target) && !e.target.closest(".yourmsg, .hismsg")) {
+            hidePanels();
+        }
+    });
+
+    document.addEventListener("click", (e) => {
+        if (
+            !reactionsPanel.contains(e.target) &&
+            !actionsPanel.contains(e.target) &&
+            !document.getElementById("all_reactions").contains(e.target) &&
+            !e.target.closest(".yourmsg, .hismsg")
+        ) {
             hidePanels();
         }
     });
@@ -665,6 +732,18 @@ main .chat .hismsg .time {
         const editBtn = actionsPanel.querySelector("[data-action='edit']");
         if (deleteBtn) deleteBtn.style.display = isMine ? "flex" : "none";
         if (editBtn) editBtn.style.display = isMine ? "flex" : "none";
+    }
+
+    function Openreactions(numr) {
+        if (numr == 0) {
+            document.getElementById("all_reactions").style.display = "none";
+        } else {
+            const savedMsgId = activeMsgId;
+            reactionsPanel.style.display = "none";
+            actionsPanel.style.display = "none";
+            document.getElementById("all_reactions").style.display = "flex";
+            activeMsgId = savedMsgId; // восстанавливаем
+        }
     }
 
     // Загрузка информации о собеседнике
@@ -765,24 +844,24 @@ main .chat .hismsg .time {
 
     // Реакции
     async function handleReaction(emoji) {
-        if (!activeMsgId) return;
+        const msgId = activeMsgId; // сохраняем ДО закрытия
+        Openreactions(0);
+        hidePanels();
+        if (!msgId) return;
 
-        const { data: msg } = await db.from("messages").select("reactions").eq("id", activeMsgId).single();
+        const { data: msg } = await db.from("messages").select("reactions").eq("id", msgId).single();
         let reactions = typeof msg.reactions === "string" ? JSON.parse(msg.reactions || "{}") : (msg.reactions || {});
 
         if (!reactions[emoji]) reactions[emoji] = [];
 
-        // Уже поставил — убираем, иначе добавляем
         const idx = reactions[emoji].indexOf(MY_USERNAME);
         if (idx !== -1) {
             reactions[emoji].splice(idx, 1);
         } else {
-            // Проверяем что этот emoji ещё не стоит от этого юзера
             reactions[emoji].push(MY_USERNAME);
         }
 
-        await db.from("messages").update({ reactions }).eq("id", activeMsgId);
-        hidePanels();
+        await db.from("messages").update({ reactions }).eq("id", msgId);
     }
 
     // Действия

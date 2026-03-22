@@ -191,7 +191,7 @@ main .chat .yourmsg {
     gap: 10px;
     word-break: break-word;
     overflow-wrap: break-word;
-    max-width: 70%;
+    max-width: 75%;
 }
 
 main .chat .yourmsg img {
@@ -221,7 +221,7 @@ main .chat .hismsg {
     gap: 10px;
     word-break: break-word;
     overflow-wrap: break-word;
-    max-width: 70%;
+    max-width: 75%;
 }
 
 main .chat .hismsg img {
@@ -394,7 +394,7 @@ main .chat .hismsg .time {
     position: absolute;
     display: flex;
     flex-wrap: wrap;
-    width: calc(44px * 4);
+    width: calc(44px * 5);
     z-index: 10001;
     background: var(--panel);
     border-radius: 14px;
@@ -454,6 +454,31 @@ main .chat .hismsg .time {
             border: 0;
             border-radius: 10px;
         }
+        
+        .all_reactions {
+    position: fixed;
+    z-index: 100;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--panel);
+    backdrop-filter: blur(10px);
+    width: 85%;
+    height: 200px;
+    border-radius: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    align-content: flex-start;
+    overflow-y: auto;
+}
+.all_reactions button {
+    flex: 0 0 calc(100% / 7);
+    aspect-ratio: 1 / 1;
+    background: 0;
+    border: 0;
+    font-size: 20px;
+}
     </style>
 <body data-theme="dark">
     <header id="header">
@@ -570,9 +595,39 @@ main .chat .hismsg .time {
         <button onclick="handleReaction('😨')">😨</button>
         <button onclick="handleReaction('🤩')">🤩</button>
         <button onclick="handleReaction('🤗')">🤗</button>
+        <button onclick="handleReaction('🤔')">🤔</button>
+        <button onclick="Openreactions(1)"><img style="width: 50%; opacity: 0.7;" src="reaction.svg" alt="reaction"></button>
     </div>
     <div class="message-actions" style="position:fixed;">
         <i data-action="copy" onclick="handleAction('copy')"><span>Копировать</span></i>
+    </div>
+    <div style="display: none;" id="all_reactions" class="all_reactions">
+        <button onclick="Openreactions(0)"><img style="height: 40%; opacity: 1;" src="back.svg" alt="reaction"></button>
+        <button onclick="handleReaction('👍')">👍</button>
+        <button onclick="handleReaction('👎')">👎</button>
+        <button onclick="handleReaction('❤️')">❤️</button>
+        <button onclick="handleReaction('🔥')">🔥</button>
+        <button onclick="handleReaction('🥰')">🥰</button>
+        <button onclick="handleReaction('😭')">😭</button>
+        <button onclick="handleReaction('👏')">👏</button>
+        <button onclick="handleReaction('😁')">😁</button>
+        <button onclick="handleReaction('😨')">😨</button>
+        <button onclick="handleReaction('🤗')">🤗</button>
+        <button onclick="handleReaction('😇')">😇</button>
+        <button onclick="handleReaction('🤔')">🤔</button>
+        <button onclick="handleReaction('🤯')">🤯</button>
+        <button onclick="handleReaction('😱')">😱</button>
+        <button onclick="handleReaction('🤬')">🤬</button>
+        <button onclick="handleReaction('😮')">😮</button>
+        <button onclick="handleReaction('😢')">😢</button>
+        <button onclick="handleReaction('🎉')">🎉</button>
+        <button onclick="handleReaction('🤩')">🤩</button>
+        <button onclick="handleReaction('🤮')">🤮</button>
+        <button onclick="handleReaction('💩')">💩</button>
+        <button onclick="handleReaction('🙏')">🙏</button>
+        <button onclick="handleReaction('👌')">👌</button>
+        <button onclick="handleReaction('🕊️')">🕊️</button>
+        <button onclick="handleReaction('🤡')">🤡</button>
     </div>
 
 <script>
@@ -605,10 +660,12 @@ main .chat .hismsg .time {
         document.getElementById(scrr + "m").classList.add("active");
         if (scrr == 1) {
             document.getElementById("header").style.display = "flex";
-            document.getElementById("footer").style.display = "flex";
+            document.getElementById("footer").style.display = IS_OWNER ? "flex" : "none";
+            document.getElementById("subfooter").style.display = IS_OWNER ? "none" : "flex";
         } else {
             document.getElementById("header").style.display = "none";
             document.getElementById("footer").style.display = "none";
+            document.getElementById("subfooter").style.display = "none";
         }
         hidePanels();
     }
@@ -619,14 +676,32 @@ main .chat .hismsg .time {
     function hidePanels() {
         reactionsPanel.style.display = "none";
         actionsPanel.style.display = "none";
+        document.getElementById("all_reactions").style.display = "none";
         activeMsgId = null;
     }
 
     document.addEventListener("click", (e) => {
-        if (!reactionsPanel.contains(e.target) && !actionsPanel.contains(e.target) && !e.target.closest(".hismsg")) {
+        if (
+            !reactionsPanel.contains(e.target) &&
+            !actionsPanel.contains(e.target) &&
+            !document.getElementById("all_reactions").contains(e.target) &&
+            !e.target.closest(".hismsg")
+        ) {
             hidePanels();
         }
     });
+
+    function Openreactions(numr) {
+        if (numr == 0) {
+            document.getElementById("all_reactions").style.display = "none";
+        } else {
+            const savedMsgId = activeMsgId;
+            reactionsPanel.style.display = "none";
+            actionsPanel.style.display = "none";
+            document.getElementById("all_reactions").style.display = "flex";
+            activeMsgId = savedMsgId;
+        }
+    }
 
     // Загрузка информации о канале
     async function loadChannelInfo() {
@@ -644,7 +719,6 @@ main .chat .hismsg .time {
         document.getElementById("channelname").textContent = CHANNEL_NAME;
         document.getElementById("channelnameed").textContent = CHANNEL_NAME;
 
-        // Показываем нужный footer
         if (IS_OWNER) {
             document.getElementById("footer").style.display = "flex";
             document.getElementById("subfooter").style.display = "none";
@@ -655,7 +729,6 @@ main .chat .hismsg .time {
         }
     }
 
-    // Подписка/отписка
     function isSubscribed() {
         const ids = JSON.parse(localStorage.getItem("putchannels") || "[]");
         return ids.includes(Number(CHANNEL_ID)) || ids.includes(CHANNEL_ID);
@@ -759,9 +832,12 @@ main .chat .hismsg .time {
     }
 
     async function handleReaction(emoji) {
-        if (!activeMsgId) return;
+        const msgId = activeMsgId;
+        Openreactions(0);
+        hidePanels();
+        if (!msgId) return;
 
-        const { data: post } = await db.from("postsChannel").select("reactions").eq("id", activeMsgId).single();
+        const { data: post } = await db.from("postsChannel").select("reactions").eq("id", msgId).single();
         let reactions = typeof post.reactions === "string" ? JSON.parse(post.reactions || "{}") : (post.reactions || {});
 
         if (!reactions[emoji]) reactions[emoji] = [];
@@ -772,8 +848,7 @@ main .chat .hismsg .time {
             reactions[emoji].push(MY_USERNAME);
         }
 
-        await db.from("postsChannel").update({ reactions }).eq("id", activeMsgId);
-        hidePanels();
+        await db.from("postsChannel").update({ reactions }).eq("id", msgId);
     }
 
     async function handleAction(action) {
@@ -825,25 +900,6 @@ main .chat .hismsg .time {
             .subscribe();
     }
 
-    // Отправка поста
-    async function sendPost(text, img = null) {
-        if (!text && !img) return;
-
-        await db.from("postsChannel").insert({
-            textofpost: text || "",
-            img: img || "",
-            channelname: CHANNEL_NAME,
-            reactions: {}
-        });
-
-        document.getElementById("imgpreviewblock").style.bottom = "-70px";
-        document.getElementById("stickerspreviewblock").style.bottom = "-155px";
-        isshowstickers = false;
-        selectedImageBase64 = null;
-        document.getElementById("imageInput").value = "";
-        document.getElementById("msgtext").value = "";
-    }
-
     document.getElementById("imageInput").addEventListener("change", async function () {
         if (this.files.length > 0) {
             const file = this.files[0];
@@ -885,6 +941,24 @@ main .chat .hismsg .time {
             await sendPost(text, img);
         }
     });
+
+    async function sendPost(text, img = null) {
+        if (!text && !img) return;
+
+        await db.from("postsChannel").insert({
+            textofpost: text || "",
+            img: img || "",
+            channelname: CHANNEL_NAME,
+            reactions: {}
+        });
+
+        document.getElementById("imgpreviewblock").style.bottom = "-70px";
+        document.getElementById("stickerspreviewblock").style.bottom = "-155px";
+        isshowstickers = false;
+        selectedImageBase64 = null;
+        document.getElementById("imageInput").value = "";
+        document.getElementById("msgtext").value = "";
+    }
 
     let isshowstickers = false;
     function showstickers() {
