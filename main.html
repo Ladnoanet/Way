@@ -1029,17 +1029,16 @@ db.channel("notifications")
     .subscribe();
 
     async function requestNotifications() {
-        await OneSignalDeferred.push(async (OneSignal) => {
-            const result = await OneSignal.Notifications.requestPermission();
-            console.log("результат:", result, OneSignal.Notifications.permission);
-            if (OneSignal.Notifications.permission) {
+        const permission = await Notification.requestPermission();
+        if (permission === "granted") {
+            await OneSignalDeferred.push(async (OneSignal) => {
                 await OneSignal.User.addTag("username", MY_USERNAME);
-                document.getElementById("notifbutton").textContent = "Уведомления включены ✓";
-                document.getElementById("notifbutton").classList.add("active");
-            } else {
-                document.getElementById("notifbutton").textContent = "Разрешение отклонено";
-            }
-        });
+            });
+            document.getElementById("notifbutton").textContent = "Уведомления включены ✓";
+            document.getElementById("notifbutton").classList.add("active");
+        } else {
+            document.getElementById("notifbutton").textContent = "Разрешение отклонено";
+        }
     }
 
     // Обновляем кнопку при загрузке
