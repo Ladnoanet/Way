@@ -8,6 +8,19 @@
     <link rel="shortcut icon" href="logo.svg" type="image/x-icon">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal) {
+        await OneSignal.init({
+        appId: "1c39e953-4754-4a48-b182-35a3f4298a4f",
+        safari_web_id: "web.onesignal.auto.13d8bf97-93cf-4a09-b799-2a50baaf1ebd",
+        notifyButton: {
+            enable: true,
+        },
+        });
+    });
+    </script>
     <style>
         body {
     background: var(--bcg);
