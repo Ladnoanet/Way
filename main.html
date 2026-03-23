@@ -641,6 +641,13 @@ main .policeoftemp .booleanblock .boolean div {
 
     if (!MY_USERNAME || !MY_NAME) window.location.href = "index.html";
 
+    // Привязываем username к OneSignal для нативного приложения
+    if (window.webkit || window.androidJSBridge) {
+        OneSignalDeferred.push(async (OneSignal) => {
+            await OneSignal.User.addTag("username", MY_USERNAME);
+        });
+    }
+
     let current_main_screen = 1;
 
     function settag(num, scr) {
