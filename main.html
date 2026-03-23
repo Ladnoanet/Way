@@ -1043,10 +1043,12 @@ db.channel("notifications")
     }
 
     // Обновляем кнопку при загрузке
-    if (Notification.permission === "granted") {
-        document.getElementById("notifbutton").textContent = "Уведомления включены ✓";
-        document.getElementById("notifbutton").classList.add("active");
-    }
+    OneSignalDeferred.push(async (OneSignal) => {
+        if (OneSignal.Notifications.permission) {
+            document.getElementById("notifbutton").textContent = "Уведомления включены ✓";
+            document.getElementById("notifbutton").classList.add("active");
+        }
+    });
 </script>
 </body>
 </html>
