@@ -1030,9 +1030,9 @@ db.channel("notifications")
 
     async function requestNotifications() {
         await OneSignalDeferred.push(async (OneSignal) => {
-            await OneSignal.Notifications.requestPermission();
+            const result = await OneSignal.Notifications.requestPermission();
+            console.log("результат:", result, OneSignal.Notifications.permission);
             if (OneSignal.Notifications.permission) {
-                // Привязываем username к подписчику
                 await OneSignal.User.addTag("username", MY_USERNAME);
                 document.getElementById("notifbutton").textContent = "Уведомления включены ✓";
                 document.getElementById("notifbutton").classList.add("active");
